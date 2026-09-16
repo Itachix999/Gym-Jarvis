@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<meta name="theme-color" content="#050507">
+<link rel="apple-touch-icon" href="data:,">
+<link rel="manifest" href="data:,">
+<title>JARVIS · Training System</title>
+<style>
+:root{
+  --bg:#050507;
+  --surf:rgba(255,255,255,.055);
+  --surf2:rgba(255,255,255,.035);
+  --glass-hi:rgba(255,255,255,.14);
+  --glass-lo:rgba(255,255,255,.02);
+  --line:rgba(255,255,255,.09);
+  --line2:rgba(255,255,255,.16);
+  --r:#ff2d44;
+  --r-lo:rgba(255,45,68,.18);
+  --r-mid:rgba(255,45,68,.5);
+  --r-glow:rgba(255,45,68,.4);
+  --tx:#ffffff;
+  --tx2:rgba(255,255,255,.68);
+  --tx3:rgba(255,255,255,.42);
+  --tx4:rgba(255,255,255,.25);
+  --ok:#34d17a;
+  --f:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Inter','Segoe UI',Roboto,sans-serif;
+  --m:'SF Mono','JetBrains Mono',ui-monospace,Menlo,monospace;
+  --rad:22px;
+  --rad-s:14px;
+  --blur:blur(32px) saturate(180%);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;overflow-x:hidden}
+body{
+  background:var(--bg);color:var(--tx);font-family:var(--f);font-size:15px;line-height:1.5;
+  padding-bottom:calc(110px + env(safe-area-inset-bottom));
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(ellipse 90% 55% at 15% -5%,rgba(255,45,68,.16),transparent 60%),
+    radial-gradient(ellipse 70% 50% at 105% 105%,rgba(80,120,255,.10),transparent 60%),
+    radial-gradient(ellipse 55% 45% at -10% 55%,rgba(160,80,255,.07),transparent 60%);
+  background-attachment:fixed;
+}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:40;
+  padding:calc(10px + env(safe-area-inset-top)) 0 10px;
+  background:linear-gradient(180deg,rgba(5,5,7,.85),rgba(5,5,7,.4) 70%,transparent);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.hd{display:flex;align-items:center;gap:12px}
+.mark{
+  width:38px;height:38px;flex:0 0 38px;border-radius:12px;
+  background:linear-gradient(155deg,#ff3d54,#a3101f);
+  display:grid;place-items:center;font-family:var(--m);font-weight:700;font-size:16px;color:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.4),
+    0 0 0 1px rgba(255,45,68,.4),
+    0 8px 24px -8px rgba(255,45,68,.6);
+  letter-spacing:-.02em;
+}
+.ttl{font-size:15px;font-weight:700;letter-spacing:-.01em;margin:0}
+.sub{font-family:var(--m);font-size:9.5px;color:var(--tx3);letter-spacing:.06em;margin-top:2px;text-transform:uppercase}
+.iconbtn{
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  border:1px solid var(--line2);border-radius:999px;color:var(--tx2);
+  font-size:11px;font-weight:600;padding:8px 13px;cursor:pointer;font-family:var(--m);
+  letter-spacing:.06em;transition:all .2s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(20px);
+}
+.iconbtn.live{
+  color:#fff;border-color:var(--r-mid);
+  background:linear-gradient(180deg,rgba(255,45,68,.28),rgba(255,45,68,.12));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 0 20px -4px var(--r-glow);
+}
+.iconbtn:active{transform:scale(.96)}
+
+/* SECTIONS */
+section{display:none;padding:18px 0 8px}
+section.on{display:block;animation:slideIn .28s cubic-bezier(.2,.9,.3,1)}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* GLASS CARD */
+.card{
+  position:relative;
+  background:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:var(--rad);
+  padding:18px;margin-bottom:14px;
+  box-shadow:
+    0 20px 50px -24px rgba(0,0,0,.8),
+    0 1px 0 rgba(255,255,255,.05) inset,
+    inset 0 1px 0 rgba(255,255,255,.14);
+  overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.09),transparent 32%);
+  mask-image:linear-gradient(180deg,#000,transparent 32%);
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 32%);
+}
+.card.accent{
+  border-left:0;
+  border-top:1px solid rgba(255,45,68,.28);
+  box-shadow:
+    0 20px 50px -24px rgba(0,0,0,.8),
+    0 0 60px -30px rgba(255,45,68,.4) inset,
+    inset 0 1px 0 rgba(255,255,255,.16);
+}
+.card.accent::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,45,68,.6),transparent);
+}
+.lbl{
+  font-family:var(--m);font-size:9.5px;letter-spacing:.14em;color:var(--tx3);
+  text-transform:uppercase;margin:0 0 12px;font-weight:600;
+}
+h2{font-size:19px;font-weight:700;margin:0 0 4px;letter-spacing:-.02em}
+h3{font-size:15px;font-weight:600;margin:0;letter-spacing:-.01em}
+p{margin:0 0 10px;color:var(--tx2);font-size:14px;line-height:1.55}
+p:last-child{margin-bottom:0}
+b{color:var(--tx);font-weight:600}
+
+/* KPI GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px}
+.kpi{
+  position:relative;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);border-radius:var(--rad-s);
+  padding:13px 8px;text-align:center;
+  backdrop-filter:blur(20px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+}
+.kpi b{display:block;font-family:var(--m);font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.kpi b.r{color:var(--r);text-shadow:0 0 20px var(--r-glow)}
+.kpi span{font-size:9px;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;font-weight:600}
+
+/* EXERCISE */
+.ex{
+  position:relative;
+  border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;
+  margin-bottom:10px;
+  background:linear-gradient(155deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  backdrop-filter:blur(20px);
+  display:flex;gap:12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+}
+.meta{font-family:var(--m);font-size:11.5px;color:var(--tx);margin-top:7px;letter-spacing:.01em}
+.meta em{color:var(--tx3);font-style:normal}
+.cue{font-size:12.5px;color:var(--tx2);margin-top:8px;line-height:1.5}
+.demo{
+  width:88px;height:76px;flex:0 0 88px;border:1px solid rgba(255,255,255,.10);border-radius:12px;
+  background:radial-gradient(75% 75% at 50% 35%,rgba(255,255,255,.06),rgba(0,0,0,.15));
+  overflow:hidden;position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.demo svg{width:100%;height:100%;display:block}
+.demo .body{stroke:var(--tx);stroke-width:3.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.demo .head{fill:var(--tx);stroke:none}
+.demo .gear{stroke:var(--r);stroke-width:3.6;fill:none;stroke-linecap:round}
+.demo .fa{animation:fa 2.4s ease-in-out infinite}
+.demo .fb{animation:fb 2.4s ease-in-out infinite}
+@keyframes fa{0%,40%{opacity:1}52%,92%{opacity:0}100%{opacity:1}}
+@keyframes fb{0%,40%{opacity:0}52%,92%{opacity:1}100%{opacity:0}}
+a.lnk{
+  display:inline-block;margin-top:10px;font-family:var(--m);font-size:10.5px;color:var(--tx2);
+  text-decoration:none;border:1px solid var(--line2);padding:6px 10px;border-radius:9px;
+  letter-spacing:.05em;background:rgba(255,255,255,.03);
+}
+a.lnk:active{border-color:var(--r);color:var(--r)}
+.chk{
+  width:26px;height:26px;flex:0 0 26px;border-radius:9px;
+  border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.04);
+  cursor:pointer;color:#fff;display:grid;place-items:center;font-size:14px;align-self:flex-start;
+  transition:all .2s;
+}
+.chk.on{
+  background:linear-gradient(155deg,#ff3d54,#a3101f);border-color:transparent;
+  box-shadow:0 0 20px -4px var(--r-glow),inset 0 1px 0 rgba(255,255,255,.3);
+}
+
+/* BUTTONS & INPUTS */
+button.btn{
+  position:relative;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
+  border:1px solid var(--line2);color:var(--tx);
+  font-family:var(--f);font-size:13.5px;font-weight:600;
+  padding:12px 16px;border-radius:14px;cursor:pointer;
+  letter-spacing:-.005em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .15s,filter .15s;
+}
+button.btn:active{transform:scale(.97);filter:brightness(1.15)}
+button.btn.pri{
+  background:linear-gradient(155deg,#ff3d54,#c01428);
+  border-color:rgba(255,255,255,.15);color:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    inset 0 -1px 0 rgba(0,0,0,.2),
+    0 8px 24px -10px rgba(255,45,68,.7);
+}
+button.btn.gh{color:var(--tx2);background:rgba(255,255,255,.04)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input,select{
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid var(--line2);color:var(--tx);border-radius:14px;
+  padding:13px 14px;font-family:var(--f);font-size:15px;width:100%;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  transition:border-color .2s,box-shadow .2s;
+}
+input:focus,select:focus{outline:none;border-color:var(--r-mid);box-shadow:0 0 0 3px rgba(255,45,68,.15),inset 0 1px 0 rgba(255,255,255,.08)}
+label{
+  font-family:var(--m);font-size:9.5px;letter-spacing:.12em;color:var(--tx3);
+  text-transform:uppercase;display:block;margin:14px 0 7px;font-weight:600;
+}
+
+/* TIMER */
+.timer{
+  font-family:var(--m);font-size:58px;font-weight:200;text-align:center;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 16px;
+  transition:color .3s,text-shadow .3s;
+}
+.timer.run{color:var(--r);text-shadow:0 0 30px var(--r-glow)}
+
+/* CHAT */
+.chat{
+  height:46vh;min-height:250px;overflow-y:auto;
+  border:1px solid rgba(255,255,255,.09);border-radius:18px;
+  padding:14px;background:rgba(0,0,0,.25);
+  margin-bottom:12px;
+  backdrop-filter:blur(20px);
+  box-shadow:inset 0 2px 20px rgba(0,0,0,.4);
+  scroll-behavior:smooth;
+}
+.chat::-webkit-scrollbar{width:4px}
+.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+.msg{
+  margin-bottom:12px;font-size:14px;line-height:1.6;max-width:88%;
+  padding:11px 14px;border-radius:18px;white-space:pre-wrap;
+  animation:msgIn .3s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.j{
+  background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.09);
+  border-bottom-left-radius:6px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+.msg.u{
+  background:linear-gradient(155deg,rgba(255,45,68,.32),rgba(255,45,68,.18));
+  border:1px solid rgba(255,45,68,.4);
+  margin-left:auto;color:#fff;
+  border-bottom-right-radius:6px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 20px -6px var(--r-glow);
+}
+.who{
+  display:block;font-family:var(--m);font-size:9px;letter-spacing:.14em;
+  color:var(--tx3);margin-bottom:6px;font-weight:600;
+}
+.msg.u .who{color:rgba(255,255,255,.7)}
+.mic{
+  width:50px;height:50px;flex:0 0 50px;border-radius:50%;
+  border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
+  color:var(--tx);display:grid;place-items:center;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+  transition:all .2s;
+}
+.mic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.mic.rec{
+  background:linear-gradient(155deg,#ff3d54,#c01428);border-color:transparent;color:#fff;
+  animation:pulse 1.2s infinite;
+}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,45,68,.6)}70%{box-shadow:0 0 0 16px rgba(255,45,68,0)}100%{box-shadow:0 0 0 0 rgba(255,45,68,0)}}
+.hint{font-family:var(--m);font-size:10.5px;color:var(--tx3);margin-top:10px;display:block;letter-spacing:.02em;line-height:1.5}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:10px 6px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}
+th{font-family:var(--m);font-size:9.5px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.ovf{overflow-x:auto}
+
+/* TAGS */
+.tag{
+  display:inline-block;font-family:var(--m);font-size:10px;font-weight:600;
+  padding:5px 10px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);
+  color:var(--tx2);margin:0 5px 5px 0;letter-spacing:.04em;
+}
+.tag.r{color:var(--r);border-color:rgba(255,45,68,.35);background:rgba(255,45,68,.10)}
+
+/* QUOTE */
+.quote-card blockquote{
+  margin:0;font-size:16px;line-height:1.6;color:var(--tx);font-style:italic;
+  font-weight:500;letter-spacing:-.01em;
+}
+.quote-card blockquote::before{content:'“';color:var(--r);font-size:28px;line-height:0;vertical-align:-8px;margin-right:4px;font-style:normal}
+.quote-author{
+  margin-top:14px;font-family:var(--m);font-size:11px;letter-spacing:.1em;
+  color:var(--r);text-transform:uppercase;font-weight:600;
+}
+
+/* FLOATING NAV */
+nav.tabs{
+  position:fixed;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  left:50%;transform:translateX(-50%);
+  width:min(520px,calc(100% - 22px));
+  z-index:50;
+  display:flex;gap:2px;padding:6px;
+  background:linear-gradient(180deg,rgba(28,28,32,.75),rgba(14,14,18,.85));
+  backdrop-filter:blur(36px) saturate(200%);
+  -webkit-backdrop-filter:blur(36px) saturate(200%);
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:999px;
+  box-shadow:
+    0 24px 60px -20px rgba(0,0,0,.9),
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.3);
+}
+.tab{
+  flex:1;background:none;border:0;color:var(--tx3);
+  font-family:var(--f);font-size:8.5px;font-weight:600;
+  letter-spacing:.05em;padding:9px 2px 7px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;text-transform:uppercase;
+  border-radius:999px;transition:all .25s cubic-bezier(.2,.9,.3,1);
+  position:relative;
+}
+.tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{
+  color:#fff;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 6px 16px -6px rgba(0,0,0,.6);
+}
+.tab.on svg{stroke:var(--r);filter:drop-shadow(0 0 6px var(--r-glow))}
+.tab:active{transform:scale(.94)}
+
+/* A2HS BANNER */
+.a2hs{
+  position:fixed;
+  bottom:calc(88px + env(safe-area-inset-bottom));
+  left:50%;transform:translateX(-50%);
+  width:min(520px,calc(100% - 22px));
+  z-index:60;
+  padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  backdrop-filter:blur(36px) saturate(200%);
+  -webkit-backdrop-filter:blur(36px) saturate(200%);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:20px;
+  box-shadow:
+    0 24px 60px -20px rgba(0,0,0,.9),
+    inset 0 1px 0 rgba(255,255,255,.2);
+  animation:msgIn .4s cubic-bezier(.2,.9,.3,1);
+}
+.a2hs.hidden{display:none}
+.a2hs-icon{
+  width:38px;height:38px;flex:0 0 38px;border-radius:10px;
+  background:linear-gradient(155deg,#ff3d54,#a3101f);
+  display:grid;place-items:center;font-family:var(--m);font-weight:700;color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px -6px var(--r-glow);
+}
+.a2hs-text{flex:1;min-width:0}
+.a2hs-text b{display:block;font-size:13px;font-weight:600;color:#fff;letter-spacing:-.01em}
+.a2hs-text span{font-size:11px;color:var(--tx3);display:block;margin-top:1px}
+.a2hs-btn{
+  background:linear-gradient(155deg,#ff3d54,#c01428);border:0;color:#fff;
+  font-family:var(--f);font-size:12px;font-weight:600;
+  padding:9px 14px;border-radius:999px;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -6px var(--r-glow);
+}
+.a2hs-btn:active{transform:scale(.96)}
+.a2hs-x{
+  background:none;border:0;color:var(--tx3);font-size:20px;line-height:1;
+  cursor:pointer;padding:0 2px;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  display:grid;place-items:center;padding:20px;
+  animation:fade .25s;
+}
+.modal.hidden{display:none}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal-card{
+  width:100%;max-width:400px;
+  background:linear-gradient(155deg,rgba(40,40,46,.95),rgba(18,18,22,.98));
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:24px;padding:24px;
+  box-shadow:
+    0 40px 90px -20px rgba(0,0,0,.9),
+    inset 0 1px 0 rgba(255,255,255,.18);
+  animation:msgIn .35s cubic-bezier(.2,.9,.3,1);
+}
+.modal-card h3{font-size:18px;font-weight:700;margin:0 0 14px;letter-spacing:-.02em}
+.modal-card ol{margin:0 0 16px;padding-left:22px;color:var(--tx2);font-size:14px;line-height:1.8}
+.modal-card ol li{margin-bottom:8px}
+.modal-card ol li b{color:#fff}
+.share-icon{
+  display:inline-grid;place-items:center;width:22px;height:22px;vertical-align:middle;
+  border:1px solid rgba(255,255,255,.2);border-radius:6px;background:rgba(255,255,255,.06);
+  font-size:13px;color:#fff;margin:0 2px;
+}
+.modal-note{
+  font-size:12.5px;color:var(--tx3);line-height:1.6;
+  padding:12px;border-radius:12px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);margin-bottom:18px !important;
+}
+</style>
+</head>
+<body>
+
+<header><div class="wrap hd">
+  <div class="mark">J</div>
+  <div style="flex:1"><div class="ttl">JARVIS</div><div class="sub" id="greet">training · v3</div></div>
+  <button class="iconbtn live" id="vToggle">VOICE</button>
+</div></header>
+
+<div class="wrap">
+
+<!-- TODAY -->
+<section id="s-today" class="on">
+  <div class="card accent">
+    <div class="lbl">Today</div>
+    <h2 id="todayName">—</h2>
+    <p id="todayFocus"></p>
+    <div class="grid" style="margin-top:16px">
+      <div class="kpi"><b id="stWeight">105</b><span>kg</span></div>
+      <div class="kpi"><b>2600</b><span>kcal</span></div>
+      <div class="kpi"><b>190</b><span>protein</span></div>
+      <div class="kpi"><b class="r" id="stStreak">0</b><span>streak</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Rest timer</div>
+    <div class="timer" id="clock">01:30</div>
+    <div class="row">
+      <button class="btn gh" onclick="setT(60)">60s</button>
+      <button class="btn gh" onclick="setT(90)">90s</button>
+      <button class="btn gh" onclick="setT(120)">120s</button>
+      <button class="btn pri" id="tBtn" style="flex:1" onclick="tgT()">Start</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Session</div>
+    <div id="todayEx"></div>
+    <button class="btn pri" style="width:100%;margin-top:6px" onclick="finishDay()">Complete session</button>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Bodyweight log</div>
+    <div class="row"><input id="wIn" type="number" step="0.1" inputmode="decimal" placeholder="kg" style="flex:2;width:auto">
+    <button class="btn" onclick="logW()">Save</button></div>
+    <div class="ovf" style="margin-top:14px"><table id="wTable"></table></div>
+  </div>
+</section>
+
+<!-- PLAN -->
+<section id="s-plan">
+  <div class="card accent">
+    <div class="lbl">Protocol</div>
+    <h2>4-day split · 3 cardio</h2>
+    <p>Two upper, two lower. Progress every week: +1 rep or +2.5 kg. Leave 1–2 reps in reserve. Form before ego.</p>
+    <div style="margin-top:12px">
+      <span class="tag r">MON Upper A</span><span class="tag r">TUE Lower A</span><span class="tag">WED Cardio</span><span class="tag r">THU Upper B</span><span class="tag r">FRI Lower B</span><span class="tag">SAT Cardio</span><span class="tag">SUN Rest</span>
+    </div>
+  </div>
+  <div class="card">
+    <label>Day</label>
+    <select id="daySel" onchange="renderPlan()"></select>
+    <div id="planEx" style="margin-top:16px"></div>
+  </div>
+</section>
+
+<!-- CARDIO -->
+<section id="s-cardio">
+  <div class="card accent">
+    <div class="lbl">Conditioning</div>
+    <h2>Cardio doctrine</h2>
+    <p>Steps drive fat loss. Sessions accelerate it. At 105 kg, protect knees — walk inclined, don't run long.</p>
+    <div class="grid" style="margin-top:16px">
+      <div class="kpi"><b class="r">9–11k</b><span>steps/day</span></div>
+      <div class="kpi"><b>3×</b><span>per week</span></div>
+      <div class="kpi"><b>130–150</b><span>bpm</span></div>
+    </div>
+  </div>
+  <div id="cardioList"></div>
+</section>
+
+<!-- FUEL -->
+<section id="s-food">
+  <div class="card accent">
+    <div class="lbl">Targets · 105 kg / 179 cm</div>
+    <div class="grid">
+      <div class="kpi"><b class="r">2600</b><span>kcal</span></div>
+      <div class="kpi"><b>190g</b><span>protein</span></div>
+      <div class="kpi"><b>75g</b><span>fat</span></div>
+      <div class="kpi"><b>270g</b><span>carbs</span></div>
+    </div>
+    <p style="margin-top:16px">Target 0.5–0.8 kg loss weekly. Stalled 2 weeks → cut 150 kcal or add 1500 steps, never both. Floor 2200 kcal.</p>
+  </div>
+
+  <div class="card quote-card">
+    <div class="lbl">Discipline · Voices</div>
+    <div id="quoteBox"></div>
+    <button class="btn gh" style="width:100%;margin-top:16px" onclick="nextQuote()">Another voice</button>
+  </div>
+</section>
+
+<!-- JARVIS -->
+<section id="s-jarvis">
+  <div class="card">
+    <div class="lbl">Assistant · gym · cardio · fat loss</div>
+    <div class="chat" id="chat"></div>
+    <div class="row" style="align-items:center">
+      <button class="mic" id="micBtn" title="Tap to speak"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+      <input id="ask" placeholder="Speak or type…" style="flex:1;width:auto" onkeydown="if(event.key==='Enter')send()">
+      <button class="btn pri" onclick="send()">Send</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gh" onclick="q('What is my workout today?')">Today</button>
+      <button class="btn gh" onclick="q('What is tomorrow workout?')">Tomorrow</button>
+      <button class="btn gh" onclick="q('Give me a warmup for today')">Warmup</button>
+      <button class="btn gh" onclick="q('I have no motivation today')">Motivate</button>
+      <button class="btn gh" onclick="q('Swap an exercise I cannot do')">Swap</button>
+    </div>
+    <span class="hint" id="engine"></span>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="s-set">
+  <div class="card">
+    <div class="lbl">Gym alerts · 3 daily</div>
+    <label>Alert 1</label><input type="time" id="a1" value="07:00">
+    <label>Alert 2</label><input type="time" id="a2" value="17:30">
+    <label>Alert 3</label><input type="time" id="a3" value="21:00">
+    <button class="btn pri" style="width:100%;margin-top:16px" onclick="armAlarms()">Install alerts</button>
+    <span class="hint" id="alarmState"></span>
+  </div>
+  <div class="card">
+    <div class="lbl">Gemini API key</div>
+    <input id="gkey" type="password" placeholder="AIza…" autocomplete="off">
+    <div class="row" style="margin-top:12px">
+      <button class="btn pri" style="flex:1" onclick="saveKey()">Save</button>
+      <button class="btn" onclick="testKey()">Test key</button>
+    </div>
+    <span class="hint" id="keyState"></span>
+  </div>
+  <div class="card">
+    <div class="lbl">System</div>
+    <button class="btn" style="width:100%" onclick="if(confirm('Erase all local data?')){localStorage.clear();location.reload()}">Reset all data</button>
+  </div>
+</section>
+</div>
+
+<nav class="tabs">
+  <button class="tab on" data-t="today"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Today</button>
+  <button class="tab" data-t="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Plan</button>
+  <button class="tab" data-t="cardio"><svg viewBox="0 0 24 24"><path d="M3 12h4l2 5 3-11 2 6h7"/></svg>Cardio</button>
+  <button class="tab" data-t="food"><svg viewBox="0 0 24 24"><path d="M5 3v8a3 3 0 0 0 6 0V3M8 11v10M18 3c-2 2-2 6-2 8h4V3z"/></svg>Fuel</button>
+  <button class="tab" data-t="jarvis"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg>Jarvis</button>
+  <button class="tab" data-t="set"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6.5 6.5l1.4 1.4M16.1 16.1l1.4 1.4M17.5 6.5l-1.4 1.4M7.9 16.1l-1.4 1.4"/></svg>Set</button>
+</nav>
+
+<div id="a2hs" class="a2hs hidden">
+  <div class="a2hs-icon">J</div>
+  <div class="a2hs-text">
+    <b>Install JARVIS</b>
+    <span>Full-screen app · working alerts</span>
+  </div>
+  <button class="a2hs-btn" onclick="showInstall()">Install</button>
+  <button class="a2hs-x" onclick="hideA2HS()">×</button>
+</div>
+
+<div id="installModal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Install JARVIS</h3>
+    <p style="font-size:13.5px;color:var(--tx2);margin-bottom:14px">On iPhone, only Safari can add web apps to your Home Screen.</p>
+    <ol>
+      <li>Tap the <b>Share</b> button <span class="share-icon">↑</span> at the bottom of Safari</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b></li>
+      <li>Tap <b>Add</b> in the top-right corner</li>
+    </ol>
+    <p class="modal-note">Then open JARVIS from your Home Screen. Voice, notifications, and offline mode all work best there, Sir Abderhman.</p>
+    <button class="btn pri" style="width:100%" onclick="hideInstall()">Got it</button>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+const DAYS=[
+{k:"Upper A",focus:"Chest, shoulders, triceps, core.",ex:[
+ {n:"Incline Dumbbell Press",s:4,r:"8–10",rest:"120s",c:"Bench 30°. Elbows 45° from torso. Two seconds down to the chest, drive up fast."},
+ {n:"Machine Chest Press",s:3,r:"10–12",rest:"90s",c:"Shoulder blades pinned back and down. Full stretch, no bounce."},
+ {n:"Seated Dumbbell Shoulder Press",s:3,r:"8–12",rest:"90s",c:"Back flat on pad, ribs down. Don't clash the dumbbells at the top."},
+ {n:"Cable Lateral Raise",s:4,r:"12–15",rest:"60s",c:"Light. Lead with the elbow, stop at shoulder height, no swinging."},
+ {n:"Triceps Rope Pushdown",s:3,r:"12–15",rest:"60s",c:"Elbows glued to ribs, split the rope at the bottom, squeeze one second."},
+ {n:"Overhead Dumbbell Triceps Extension",s:2,r:"12–15",rest:"60s",c:"Deep stretch behind the head, slow lowering."},
+ {n:"Plank",s:3,r:"40–60 sec",rest:"45s",c:"Glutes tight, ribs down, straight line head to heel."}]},
+{k:"Lower A",focus:"Quads, glutes, calves. Highest calorie burn.",ex:[
+ {n:"Goblet or Back Squat",s:4,r:"8–10",rest:"150s",c:"Feet shoulder width, toes slightly out. Sit down, not forward. Chest tall, knees track over toes."},
+ {n:"Leg Press",s:3,r:"12–15",rest:"120s",c:"Feet mid-platform. Never lock knees hard. Stop before the lower back lifts off."},
+ {n:"Romanian Deadlift",s:3,r:"10–12",rest:"120s",c:"Soft knees, hips back, bar close to the legs. Feel the hamstring stretch, then stand tall."},
+ {n:"Walking Lunges",s:3,r:"10 / leg",rest:"90s",c:"Long step, back knee near the floor, drive through the front heel."},
+ {n:"Lying Leg Curl",s:3,r:"12–15",rest:"60s",c:"Three-second negative. Hips stay pinned to the pad."},
+ {n:"Standing Calf Raise",s:4,r:"15–20",rest:"45s",c:"Full stretch at the bottom, one-second hold at the top."}]},
+{k:"Upper B",focus:"Back, biceps, rear delts. The V-taper.",ex:[
+ {n:"Lat Pulldown",s:4,r:"10–12",rest:"90s",c:"Chest up, pull the bar to the collarbone with the elbows, control the way back up."},
+ {n:"Seated Cable Row",s:4,r:"10–12",rest:"90s",c:"Pull to the navel, squeeze the shoulder blades one second, no rocking."},
+ {n:"Chest-Supported Dumbbell Row",s:3,r:"10–12",rest:"90s",c:"Flat back, drag the elbow past the ribs, no torso twist."},
+ {n:"Face Pull",s:3,r:"15–20",rest:"60s",c:"Rope to eye level, thumbs back. Fixes posture from sitting."},
+ {n:"Dumbbell Curl",s:3,r:"10–12",rest:"60s",c:"Elbows still, no body swing, squeeze at the top."},
+ {n:"Hammer Curl",s:3,r:"10–12",rest:"60s",c:"Neutral grip. Builds forearm and arm thickness."},
+ {n:"Hanging Knee Raise",s:3,r:"12–15",rest:"60s",c:"Curl the pelvis up, don't just swing the legs."}]},
+{k:"Lower B",focus:"Posterior chain and conditioning finisher.",ex:[
+ {n:"Trap Bar Deadlift",s:4,r:"6–8",rest:"180s",c:"Flat back, chest proud, push the floor away with the legs. Back rounds, set ends."},
+ {n:"Bulgarian Split Squat",s:3,r:"8–10 / leg",rest:"90s",c:"Rear foot on bench, front shin near vertical. Hold a rack for balance the first weeks."},
+ {n:"Hip Thrust",s:3,r:"10–12",rest:"90s",c:"Chin tucked, ribs down, squeeze the glutes two seconds at the top."},
+ {n:"Leg Extension",s:3,r:"12–15",rest:"60s",c:"One-second pause at the top, slow negative."},
+ {n:"Seated Calf Raise",s:3,r:"15–20",rest:"45s",c:"Full range, controlled tempo."},
+ {n:"Farmer Carry",s:3,r:"40 m",rest:"75s",c:"Heavy dumbbells, tall posture, braced core. Conditioning without joint damage."}]},
+{k:"Cardio / Active",focus:"No lifting. Burn, recover, move.",ex:[
+ {n:"Incline Treadmill Walk",s:1,r:"35–45 min",rest:"—",c:"5–6 km/h at 8–12% incline. Hands off the rails. Breathing hard but able to talk."},
+ {n:"Bike or Elliptical",s:1,r:"25–30 min",rest:"—",c:"Use this if knees or feet are sore from walking."},
+ {n:"Mobility circuit",s:1,r:"10 min",rest:"—",c:"Deep squat hold, couch stretch, cat-camel, band shoulder dislocates."}]},
+{k:"Rest",focus:"Full rest. Muscle is built now, not in the gym.",ex:[
+ {n:"Outdoor walk",s:1,r:"8000+ steps",rest:"—",c:"Easy pace, daylight. Free fat loss with zero fatigue cost."},
+ {n:"Sleep 8–9 hours",s:1,r:"nightly",rest:"—",c:"Phone away 30 minutes before bed. The real supplement."}]}];
+const CARDIO=[
+ {n:"Incline walk (LISS)",w:"3× weekly · 35–45 min",c:"Main fat-loss engine. Incline 8–12%, 5–6 km/h. Lowest joint stress at your bodyweight.",t:"≈400 kcal"},
+ {n:"Daily steps",w:"Every day · 9–11k",c:"Bigger total effect than any HIIT session. Walk to school, walk after dinner.",t:"≈350 kcal"},
+ {n:"Bike intervals",w:"1× weekly · 15 min",c:"Only after 4 weeks of base. 30s hard / 90s easy × 8. Bike, not running — protect the knees.",t:"≈200 kcal"},
+ {n:"Carry finisher",w:"End of Lower B",c:"3 rounds of 40 m farmer carry. Heart rate spike, no joint smash.",t:"≈120 kcal"}];
+const WEEK=[5,0,1,4,2,3,4];
+const DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+/* ============ VOICES (quotes) ============ */
+const QUOTES=[
+ {q:"It ain't about how hard you hit. It's about how hard you can get hit and keep moving forward.",a:"Rocky Balboa"},
+ {q:"Every champion was once a contender that refused to give up.",a:"Rocky Balboa"},
+ {q:"Going in one more round when you don't think you can — that's what makes all the difference.",a:"Rocky Balboa"},
+ {q:"The world is yours.",a:"Tony Montana"},
+ {q:"In this country, you gotta make the money first. Then when you get the money, you get the power.",a:"Tony Montana"},
+ {q:"I always tell the truth. Even when I lie.",a:"Tony Montana"},
+ {q:"You wanna play rough? Okay. Say hello to my little friend!",a:"Tony Montana"},
+ {q:"The last three or four reps is what makes the muscle grow.",a:"Arnold Schwarzenegger"},
+ {q:"The pain you feel today will be the strength you feel tomorrow.",a:"Arnold Schwarzenegger"},
+ {q:"Everybody wants to be a bodybuilder, but nobody wants to lift no heavy-ass weights.",a:"Ronnie Coleman"},
+ {q:"I hated every minute of training, but I said, don't quit. Suffer now and live the rest of your life as a champion.",a:"Muhammad Ali"},
+ {q:"It's not the size of the dog in the fight, it's the size of the fight in the dog.",a:"Muhammad Ali"},
+ {q:"Don't pray for an easy life, pray for the strength to endure a difficult one.",a:"Bruce Lee"},
+ {q:"I fear not the man who has practiced 10,000 kicks once, but I fear the man who has practiced one kick 10,000 times.",a:"Bruce Lee"},
+ {q:"You are stopping you. You are giving up instead of getting hard.",a:"David Goggins"},
+ {q:"When you think you're done, you're only at 40% of your body's capability.",a:"David Goggins"},
+ {q:"Discipline equals freedom.",a:"Jocko Willink"},
+ {q:"If you want to be a lion, you must train with lions.",a:"Cus D'Amato"},
+ {q:"The fight is won or lost far away from witnesses — behind the lines, in the gym, and out there on the road.",a:"Muhammad Ali"},
+ {q:"Success is not final, failure is not fatal: it is the courage to continue that counts.",a:"Winston Churchill"},
+ {q:"The only way to do great work is to love what you do.",a:"Steve Jobs"},
+ {q:"Hard times create strong men. Strong men create good times.",a:"G. Michael Hopf"},
+ {q:"I'm not in competition with anybody but myself. My goal is to beat my last performance.",a:"Kobe Bryant"},
+ {q:"Rest at the end, not in the middle.",a:"Kobe Bryant"},
+ {q:"Some people want it to happen, some wish it would happen, others make it happen.",a:"Michael Jordan"},
+ {q:"I've failed over and over and over again in my life. And that is why I succeed.",a:"Michael Jordan"}
+];
+let qIdx=Math.floor(Math.random()*QUOTES.length);
+function renderQuote(){
+  const q=QUOTES[qIdx];
+  quoteBox.innerHTML=
+    `<blockquote>${q.q}</blockquote>`+
+    `<div class="quote-author">— ${q.a}</div>`;
+}
+function nextQuote(){qIdx=(qIdx+1)%QUOTES.length;haptic(6);renderQuote();}
+
+/* ============ STATE ============ */
+const S=JSON.parse(localStorage.getItem("jarvis")||"{}");
+S.done=S.done||{};S.weights=S.weights||[];S.streak=S.streak||0;
+const save=()=>localStorage.setItem("jarvis",JSON.stringify(S));
+const todayIdx=()=>WEEK[new Date().getDay()];
+const tomorrowIdx=()=>WEEK[(new Date().getDay()+1)%7];
+const dkey=()=>new Date().toDateString();
+const haptic=(ms=8)=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
+
+/* ============ NAV ============ */
+const tabs=[...document.querySelectorAll(".tab")];
+tabs.forEach(b=>b.onclick=()=>{
+  haptic(6);
+  tabs.forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+  document.getElementById("s-"+b.dataset.t).classList.add("on");
+  window.scrollTo({top:0,behavior:"instant"});
+});
+let tx=0,ty=0;
+document.addEventListener("touchstart",e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+document.addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6){
+    const cur=tabs.findIndex(t=>t.classList.contains("on"));
+    const nxt=dx<0?cur+1:cur-1;
+    if(tabs[nxt])tabs[nxt].click();
+  }
+},{passive:true});
+
+/* ============ RENDER ============ */
+const yt=n=>"https://www.youtube.com/results?search_query="+encodeURIComponent(n+" proper form tutorial");
+const P={
+ squat:[{h:[60,16],b:"M60 23 L60 52 M60 52 L52 74 L52 96 M60 52 L68 74 L68 96 M60 30 L46 30 M60 30 L74 30",e:"M38 30 L82 30"},
+        {h:[60,30],b:"M60 37 L58 60 M58 60 L44 72 L48 96 M58 60 L70 72 L66 96 M58 44 L46 44 M58 44 L72 44",e:"M38 44 L80 44"}],
+ hinge:[{h:[60,18],b:"M60 25 L60 54 M60 54 L56 76 L56 96 M60 54 L64 76 L64 96 M60 32 L58 52 M60 32 L64 52",e:"M48 52 L74 52"},
+        {h:[44,32],b:"M50 37 L66 56 M66 56 L62 76 L60 96 M66 56 L70 74 L70 96 M52 41 L50 66 M52 41 L56 66",e:"M40 66 L66 66"}],
+ split:[{h:[60,16],b:"M60 23 L60 52 M60 52 L54 74 L54 96 M60 52 L66 74 L66 96 M60 30 L52 48 M60 30 L68 48",e:"M46 48 L58 48 M62 48 L74 48"},
+        {h:[58,24],b:"M58 31 L58 58 M58 58 L40 74 L36 96 M58 58 L74 76 L78 96 M58 36 L50 56 M58 36 L66 56",e:"M44 56 L56 56 M60 56 L72 56"}],
+ legPress:[{h:[30,52],b:"M37 55 L62 60 M62 60 L82 50 L98 58 M62 60 L82 62 L98 68",e:"M98 40 L98 78"},
+           {h:[30,52],b:"M37 55 L62 60 M62 60 L74 44 L86 54 M62 60 L74 62 L86 66",e:"M86 34 L86 74"}],
+ bench:[{h:[26,58],b:"M33 60 L76 62 M76 62 L92 52 L100 64 M76 62 L92 68 L100 78 M42 60 L42 48 M56 60 L56 48",e:"M34 46 L66 46"},
+        {h:[26,58],b:"M33 60 L76 62 M76 62 L92 52 L100 64 M76 62 L92 68 L100 78 M42 60 L42 32 M56 60 L56 32",e:"M34 30 L66 30"}],
+ ohp:[{h:[60,26],b:"M60 33 L60 62 M60 62 L54 80 L54 96 M60 62 L66 80 L66 96 M60 38 L46 38 L46 30 M60 38 L74 38 L74 30",e:"M38 28 L82 28"},
+      {h:[60,26],b:"M60 33 L60 62 M60 62 L54 80 L54 96 M60 62 L66 80 L66 96 M60 38 L48 30 L48 14 M60 38 L72 30 L72 14",e:"M38 12 L82 12"}],
+ lateral:[{h:[60,18],b:"M60 25 L60 58 M60 58 L54 78 L54 96 M60 58 L66 78 L66 96 M60 32 L52 54 M60 32 L68 54",e:"M46 54 L58 54 M62 54 L74 54"},
+          {h:[60,18],b:"M60 25 L60 58 M60 58 L54 78 L54 96 M60 58 L66 78 L66 96 M60 32 L40 32 M60 32 L80 32",e:"M32 32 L46 32 M74 32 L88 32"}],
+ push:[{h:[60,18],b:"M60 25 L60 58 M60 58 L54 78 L54 96 M60 58 L66 78 L66 96 M60 32 L56 44 L48 36 M60 32 L64 44 L72 36",e:"M46 36 L74 36 M60 6 L60 24"},
+       {h:[60,18],b:"M60 25 L60 58 M60 58 L54 78 L54 96 M60 58 L66 78 L66 96 M60 32 L56 46 L54 58 M60 32 L64 46 L66 58",e:"M50 58 L70 58 M60 6 L60 24"}],
+ curl:[{h:[60,18],b:"M60 25 L60 58 M60 58 L54 78 L54 96 M60 58 L66 78 L66 96 M60 32 L52 54 M60 32 L68 54",e:"M44 54 L58 54 M62 54 L76 54"},
+       {h:[60,18],b:"M60 25 L60 58 M60 58 L54 78 L54 96 M60 58 L66 78 L66 96 M60 32 L52 48 L58 34 M60 32 L68 48 L62 34",e:"M48 34 L68 34"}],
+ pull:[{h:[60,32],b:"M60 39 L60 64 M60 64 L52 82 L52 98 M60 64 L68 82 L68 98 M60 44 L46 24 M60 44 L74 24",e:"M36 22 L84 22"},
+       {h:[60,32],b:"M60 39 L60 64 M60 64 L52 82 L52 98 M60 64 L68 82 L68 98 M60 44 L44 38 L52 50 M60 44 L76 38 L68 50",e:"M38 50 L82 50"}],
+ row:[{h:[44,34],b:"M50 38 L52 64 M52 64 L76 66 L82 80 M52 44 L88 48",e:"M88 40 L88 56"},
+      {h:[46,34],b:"M52 38 L54 64 M54 64 L78 66 L84 80 M54 44 L74 48 L58 52",e:"M52 52 L64 48"}],
+ plank:[{h:[26,62],b:"M33 64 L86 74 M33 64 L30 84 M86 74 L94 88 M36 66 L40 84",e:"M20 92 L104 92"},
+        {h:[26,60],b:"M33 62 L86 72 M33 62 L30 82 M86 72 L94 88 M36 64 L40 82",e:"M20 92 L104 92"}],
+ knee:[{h:[60,22],b:"M60 29 L60 64 M60 29 L50 8 M60 29 L70 8 M60 64 L58 84 L58 98 M60 64 L64 84 L64 98",e:"M34 6 L86 6"},
+       {h:[60,22],b:"M60 29 L60 62 M60 29 L50 8 M60 29 L70 8 M60 62 L44 62 L42 76 M60 62 L46 68 L44 82",e:"M34 6 L86 6"}],
+ thrust:[{h:[34,52],b:"M41 55 L64 66 M64 66 L82 58 L94 72 M64 66 L80 68 L94 80",e:"M58 60 L70 60"},
+         {h:[34,50],b:"M41 53 L64 52 M64 52 L82 56 L94 72 M64 52 L80 58 L94 80",e:"M58 46 L70 46"}],
+ legCurl:[{h:[24,62],b:"M31 64 L74 68 M74 68 L96 68 M74 68 L96 74",e:"M92 62 L92 80"},
+          {h:[24,62],b:"M31 64 L74 68 M74 68 L88 50 M74 68 L92 58",e:"M84 44 L96 54"}],
+ legExt:[{h:[36,40],b:"M42 44 L60 62 M60 62 L80 64 L88 80 M44 48 L60 56",e:"M86 74 L94 86"},
+         {h:[36,40],b:"M42 44 L60 62 M60 62 L82 60 L96 54 M44 48 L60 56",e:"M94 48 L102 60"}],
+ calf:[{h:[60,20],b:"M60 27 L60 58 M60 58 L56 80 L56 96 M60 58 L64 80 L64 96",e:"M46 34 L74 34"},
+       {h:[60,12],b:"M60 19 L60 50 M60 50 L56 72 L56 88 L62 96 M60 50 L64 72 L64 88 L70 96",e:"M46 26 L74 26"}],
+ carry:[{h:[60,18],b:"M60 25 L60 56 M60 56 L52 78 L52 96 M60 56 L68 76 L70 96 M60 30 L50 56 M60 30 L70 56",e:"M42 56 L58 56 M62 56 L78 56"},
+        {h:[60,18],b:"M60 25 L60 56 M60 56 L56 76 L50 96 M60 56 L66 78 L72 96 M60 30 L50 56 M60 30 L70 56",e:"M42 56 L58 56 M62 56 L78 56"}],
+ walk:[{h:[56,18],b:"M56 25 L58 54 M58 54 L48 74 L42 90 M58 54 L68 72 L76 88 M56 30 L46 50 M56 30 L68 46",e:"M16 96 L104 76"},
+       {h:[56,18],b:"M56 25 L58 54 M58 54 L50 72 L58 88 M58 54 L64 76 L54 92 M56 30 L48 48 M56 30 L66 50",e:"M16 96 L104 76"}],
+ bike:[{h:[48,26],b:"M54 32 L62 58 M62 58 L76 60 L82 74 M62 58 L72 70 L66 84 M54 36 L78 44",e:"M74 78 A10 10 0 1 0 74 78.1 M84 44 L78 44"},
+       {h:[48,26],b:"M54 32 L62 58 M62 58 L74 66 L66 80 M62 58 L78 56 L84 72 M54 36 L78 44",e:"M74 78 A10 10 0 1 0 74 78.1 M84 44 L78 44"}],
+ mob:[{h:[60,30],b:"M60 37 L58 60 M58 60 L44 72 L48 94 M58 60 L70 72 L66 94 M58 44 L50 58 M58 44 L68 58",e:"M30 96 L92 96"},
+      {h:[60,18],b:"M60 25 L60 54 M60 54 L54 76 L54 94 M60 54 L66 76 L66 94 M60 30 L48 18 M60 30 L72 18",e:"M30 96 L92 96"}],
+ sleep:[{h:[30,64],b:"M37 66 L80 66 M80 66 L94 74 M46 66 L52 58 M62 66 L68 58",e:"M20 78 L104 78 M20 72 L34 72"},
+        {h:[30,64],b:"M37 66 L80 68 M80 68 L94 76 M46 66 L52 60 M62 67 L68 60",e:"M20 78 L104 78 M20 72 L34 72"}]};
+const MAP=[[/leg curl/i,"legCurl"],[/leg extension/i,"legExt"],[/leg press/i,"legPress"],
+ [/split squat|bulgarian|lunge/i,"split"],[/squat/i,"squat"],[/romanian|deadlift/i,"hinge"],
+ [/pulldown/i,"pull"],[/row|face pull/i,"row"],[/hip thrust/i,"thrust"],[/calf/i,"calf"],
+ [/knee raise/i,"knee"],[/plank/i,"plank"],[/carry/i,"carry"],[/lateral/i,"lateral"],
+ [/pushdown|triceps/i,"push"],[/curl/i,"curl"],[/shoulder press/i,"ohp"],[/press/i,"bench"],
+ [/walk|treadmill|steps/i,"walk"],[/bike|elliptical/i,"bike"],[/mobility|stretch/i,"mob"],[/sleep/i,"sleep"]];
+function poseKey(n){for(const[re,k] of MAP)if(re.test(n))return k;return "squat"}
+const frame=(f,cls)=>`<g class="${cls}"><circle class="head" cx="${f.h[0]}" cy="${f.h[1]}" r="7.5"/><path class="body" d="${f.b}"/><path class="gear" d="${f.e}"/></g>`;
+function demo(n){const p=P[poseKey(n)];
+  return `<div class="demo"><svg viewBox="0 0 120 104" xmlns="http://www.w3.org/2000/svg">${frame(p[0],"fa")}${frame(p[1],"fb")}</svg></div>`}
+function exCard(e,i,check){
+  const on=check&&S.done[dkey()]&&S.done[dkey()][i];
+  return `<div class="ex">${demo(e.n)}<div style="flex:1;min-width:0">
+   <h3>${e.n}</h3>
+   <div class="meta">${e.s>1?e.s+" × ":""}${e.r}${e.rest!=="—"?"  <em>· rest "+e.rest+"</em>":""}</div>
+   <div class="cue">${e.c}</div>
+   <a class="lnk" target="_blank" rel="noopener" href="${yt(e.n)}">Full video ↗</a></div>
+   ${check?`<button class="chk ${on?"on":""}" onclick="tick(${i},this)">${on?"✓":""}</button>`:""}</div>`;
+}
+function tick(i,el){haptic();const k=dkey();S.done[k]=S.done[k]||{};S.done[k][i]=!S.done[k][i];
+  el.classList.toggle("on");el.textContent=S.done[k][i]?"✓":"";save()}
+function renderToday(){const d=DAYS[todayIdx()];
+  todayName.textContent=d.k;todayFocus.textContent=d.focus;
+  todayEx.innerHTML=d.ex.map((e,i)=>exCard(e,i,true)).join("");
+  stStreak.textContent=S.streak;
+  if(S.weights.length)stWeight.textContent=S.weights[S.weights.length-1].w}
+function renderPlan(){planEx.innerHTML=DAYS[daySel.value].ex.map((e,i)=>exCard(e,i,false)).join("")}
+function finishDay(){if(S.last!==dkey()){S.streak++;S.last=dkey();save();renderToday()}
+  speak("Session logged, Sir Abderhman. Streak now "+S.streak+" days.");
+  alert("Session logged. Streak: "+S.streak+" days.")}
+function logW(){const v=parseFloat(wIn.value);if(!v)return;haptic();
+  S.weights.push({d:new Date().toLocaleDateString(),w:v});save();wIn.value="";renderW();renderToday();
+  speak("Logged at "+v+" kilograms, Sir Abderhman.")}
+function renderW(){const l=S.weights.slice(-12).reverse();
+  wTable.innerHTML=l.length?"<tr><th>Date</th><th>kg</th><th>Δ</th></tr>"+l.map((x,i)=>{
+   const p=l[i+1],d=p?(x.w-p.w).toFixed(1):"";
+   return `<tr><td>${x.d}</td><td>${x.w}</td><td style="color:${d<0?"var(--ok)":"var(--tx3)"}">${d?(d>0?"+":"")+d:"—"}</td></tr>`}).join("")
+   :"<tr><td style='color:var(--tx3);font-size:13px'>No entries yet.</td></tr>"}
+daySel.innerHTML=DAYS.map((d,i)=>`<option value="${i}" ${i===todayIdx()?"selected":""}>${d.k}</option>`).join("");
+cardioList.innerHTML=CARDIO.map(c=>`<div class="card"><div class="lbl">${c.w}</div><h2>${c.n}</h2><p style="margin-top:8px">${c.c}</p><span class="tag r">${c.t}</span></div>`).join("");
+renderToday();renderPlan();renderW();renderQuote();
+
+/* ============ TIMER ============ */
+let T=90,run=null,left=90;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+const paint=()=>clock.textContent=fmt(left);
+function setT(s){T=s;left=s;stopT();paint();haptic(6)}
+function stopT(){clearInterval(run);run=null;tBtn.textContent="Start";clock.classList.remove("run")}
+function tgT(){haptic(10);if(run){stopT();return}tBtn.textContent="Pause";clock.classList.add("run");
+  run=setInterval(()=>{left--;paint();if(left<=0){stopT();left=T;paint();beep();haptic(30);speak("Rest complete, Sir Abderhman. Next set.")}},1000)}
+paint();
+function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();
+ o.connect(g);g.connect(a.destination);o.frequency.value=760;g.gain.setValueAtTime(.2,a.currentTime);
+ g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.6);o.start();o.stop(a.currentTime+.6)}catch(e){}}
+
+/* ============ VOICE OUT ============ */
+let VOICE=localStorage.getItem("voice")!=="0";
+vToggle.textContent=VOICE?"VOICE ON":"VOICE OFF";
+vToggle.classList.toggle("live",VOICE);
+vToggle.onclick=()=>{VOICE=!VOICE;localStorage.setItem("voice",VOICE?"1":"0");
+  vToggle.textContent=VOICE?"VOICE ON":"VOICE OFF";vToggle.classList.toggle("live",VOICE);
+  if(VOICE)speak("Voice online, Sir Abderhman.")};
+function speak(t){if(!VOICE||!window.speechSynthesis)return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[*#_`]/g,""));
+  const vs=speechSynthesis.getVoices();
+  const v=vs.find(x=>/Daniel|Arthur|Oliver|UK English Male/i.test(x.name))||vs.find(x=>/en-GB/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));
+  if(v)u.voice=v;u.rate=.98;u.pitch=.82;speechSynthesis.speak(u)}catch(e){}}
+
+/* ============ VOICE IN ============ */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,listening=false;
+if(SR){
+  rec=new SR();rec.lang="en-US";rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+  rec.onresult=e=>{let s="";for(let i=0;i<e.results.length;i++)s+=e.results[i][0].transcript;ask.value=s;
+    if(e.results[e.results.length-1].isFinal){stopRec();setTimeout(send,120)}};
+  rec.onerror=e=>{stopRec();if(e.error==="not-allowed")push("Microphone permission denied, Sir Abderhman. Enable it in Settings → Safari → Microphone, then try again.","j")};
+  rec.onend=()=>stopRec();
+  micBtn.onclick=()=>{haptic();listening?stopRec():startRec()};
+}else{
+  micBtn.onclick=()=>push("Voice input is not supported by this browser, Sir Abderhman. Use Safari or Chrome.","j");
+}
+function startRec(){try{speechSynthesis&&speechSynthesis.cancel();rec.start();listening=true;
+  micBtn.classList.add("rec");ask.placeholder="Listening…"}catch(e){}}
+function stopRec(){listening=false;micBtn.classList.remove("rec");ask.placeholder="Speak or type…";try{rec.stop()}catch(e){}}
+
+/* ============ JARVIS BRAIN (today + tomorrow + week) ============ */
+function listEx(d){
+  return d.ex.map((e,i)=>`${i+1}. ${e.n} — ${e.s>1?e.s+"×":""}${e.r}${e.rest!=="—"?", rest "+e.rest:""}. ${e.c}`).join("\n");
+}
+function sysPrompt(){
+  const today=DAYS[todayIdx()];
+  const tomorrow=DAYS[tomorrowIdx()];
+  const todayName=DOW[new Date().getDay()];
+  const tomorrowName=DOW[(new Date().getDay()+1)%7];
+  const lastW=S.weights.length?S.weights[S.weights.length-1].w+" kg":"not logged";
+  const weekLines=DOW.map((n,i)=>`${n}: ${DAYS[WEEK[i]].k}`).join("\n");
+  return `You are JARVIS, personal gym intelligence for Abderhman: 17 years old, 105 kg, 179 cm, goal fat loss and muscle gain.
+RULES: Always address him as "Sir Abderhman". Calm, dry, loyal British-butler tone. Maximum 120 words, no markdown symbols.
+ONLY topics: training, technique, cardio, fat loss, nutrition for training, recovery, motivation. Anything else: decline politely and steer back to training.
+Never suggest steroids, fat burners, extreme diets, or eating below 2200 kcal; send medical or supplement questions to a doctor or parent.
+
+CURRENT DATE: ${todayName}
+
+TODAY — ${today.k} (${today.focus}):
+${listEx(today)}
+
+TOMORROW — ${tomorrowName}, ${tomorrow.k} (${tomorrow.focus}):
+${listEx(tomorrow)}
+
+FULL WEEKLY SPLIT:
+${weekLines}
+
+Client stats: 105 kg, 179 cm, 17 years old. Streak: ${S.streak} days. Latest logged weight: ${lastW}.
+Fuel targets: 2600 kcal, 190 g protein, 75 g fat, 270 g carbs.
+
+BEHAVIOUR:
+- If he asks about "today", answer using TODAY's list above exactly — every exercise, sets, reps, rest, in order.
+- If he asks about "tomorrow", answer using TOMORROW's list above exactly — every exercise, sets, reps, rest, in order.
+- If he asks about the week or a specific day, use the FULL WEEKLY SPLIT above.
+- Do not invent exercises that are not listed. Only propose swaps if he explicitly asks.`;
+}
+let sampler=null;
+(async()=>{try{sampler=window.claude?await window.claude.use("sample"):null}catch(e){}setEngine()})();
+function setEngine(){
+  const k=localStorage.getItem("gkey");
+  engine.textContent="Engine : "+(k?"Online Core → ":"")+(sampler?"":"")+"Offline Core";
+}
+function push(t,who){const d=document.createElement("div");d.className="msg "+(who==="u"?"u":"j");
+  d.innerHTML=`<span class="who">${who==="u"?"SIR ABDERHMAN":"JARVIS"}</span>`+t.replace(/</g,"&lt;");
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d}
+push("Systems online, Sir Abderhman. Today is "+DAYS[todayIdx()].k+" — "+DAYS[todayIdx()].focus+"\n\nTomorrow: "+DAYS[tomorrowIdx()].k+".\n\nAsk me about today, tomorrow, warmups, technique, cardio, or fuel.","j");
+
+function offline(t){
+  /* tomorrow */
+  if(/tomorrow|next day/i.test(t)){
+    const d=DAYS[tomorrowIdx()];
+    const list=d.ex.map((e,i)=>`${i+1}. ${e.n} — ${e.s>1?e.s+"×":""}${e.r}${e.rest!=="—"?", rest "+e.rest:""}`).join("\n");
+    return `Tomorrow is ${d.k}, Sir Abderhman. ${d.focus}\n\n${list}\n\nPrepare your bag and pre-workout meal tonight.`;
+  }
+  /* weekly split */
+  if(/(whole|full|weekly|this) week|weekly split|schedule|week plan/i.test(t)){
+    return DOW.map((n,i)=>`${n}: ${DAYS[WEEK[i]].k}`).join("\n");
+  }
+  /* today */
+  if(/what.*(today|train|workout|program|session)|today.*(workout|plan|train|program|session)|my (workout|plan|session|program|training)/i.test(t)){
+    const d=DAYS[todayIdx()];
+    const list=d.ex.map((e,i)=>`${i+1}. ${e.n} — ${e.s>1?e.s+"×":""}${e.r}${e.rest!=="—"?", rest "+e.rest:""}`).join("\n");
+    return `Today is ${d.k}, Sir Abderhman. ${d.focus}\n\n${list}\n\nShall I walk you through the first exercise?`;
+  }
+  /* general KB */
+  const KB=[
+   [/warm ?up|warmup/i,"Warmup, Sir Abderhman: 5 minutes bike or incline walk, then 10 arm circles, 10 bodyweight squats, 10 hip hinges, 10 band pull-aparts. Then two ramp sets of the first lift at 50% and 75%. Eight minutes total."],
+   [/motivat|lazy|tired|no energy|give up|bored|quit/i,"Motivation is a guest, Sir Abderhman. Discipline lives here. The rule: go and perform only the first exercise. If you still feel dead after that set, you may leave. You will not leave."],
+   [/swap|replace|cannot do|no machine|alternative/i,"Swaps, Sir Abderhman: lat pulldown → assisted pull-up or band pulldown. Leg press → goblet squat. Hip thrust → floor glute bridge. Trap bar → dumbbell Romanian deadlift. Cable lateral → dumbbell lateral. Keep the pattern — push, pull, hinge, squat — and the plan holds."],
+   [/protein/i,"190 grams daily, Sir Abderhman. Four eggs 24g, 200g chicken 60g, 250g fish or beef 55g, 200g Greek yogurt 20g, one whey scoop 25g. Split across four meals of 40–50 grams."],
+   [/calorie|kcal|how much.*eat|deficit/i,"2600 kcal, Sir Abderhman. That is 0.5 to 0.8 kilograms of fat weekly while you still build muscle. Never below 2200."],
+   [/cardio|run|treadmill|hiit/i,"Incline walking 35 to 45 minutes, three times weekly, plus 9 to 11 thousand steps daily. One bike interval session after the first month. No long running yet — at 105 kilograms the knees pay the bill."],
+   [/ab|abs|six pack|belly|stomach/i,"Abs are revealed, not built, Sir Abderhman. Train core twice weekly, but the deficit does the reveal. Fat loss first for five to six months."],
+   [/sore|pain|hurt|injur/i,"Soreness for 48 hours is normal. Sharp joint pain, pain during the rep, or pain past five days is not. Stop that exercise and see a doctor — a physician outranks me on pain."],
+   [/supplement|creatine|whey|fat burner/i,"Whey if you cannot hit 190 grams — it is only food. Creatine monohydrate 5 grams is well studied, but ask a doctor or your parents first. Fat burners, no. Steroids, absolutely not."],
+   [/water|hydrat/i,"Three litres daily, more on training days. Strength drops before you feel thirsty."],
+   [/sleep/i,"Eight to nine hours, Sir Abderhman. Growth hormone peaks in deep sleep. Dark room, cool room, no phone in bed."],
+   [/plateau|not losing|stuck|scale/i,"Plateau protocol: fourteen days with no movement, then cut 150 kcal or add 1500 steps — one change only. Judge weekly averages, never single mornings."],
+   [/quote|motivation quote|rocky|tony montana/i,()=>{const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];return `"${q.q}" — ${q.a}`}]
+  ];
+  for(const[re,a] of KB){if(re.test(t))return typeof a==="function"?a():a}
+  const d=DAYS[todayIdx()];
+  return "My offline core covers training, cardio, nutrition, recovery and discipline, Sir Abderhman. Today is "+d.k+" and tomorrow is "+DAYS[tomorrowIdx()].k+". Ask about today's workout, tomorrow's workout, warmup, protein, calories, cardio, plateaus, soreness or swaps.";
+}
+function q(t){ask.value=t;send()}
+const GMODELS=["gemini-2.0-flash","gemini-1.5-flash","gemini-flash-latest","gemini-1.5-flash-latest"];
+async function gemini(t){
+  const key=localStorage.getItem("gkey");if(!key)return null;
+  let lastErr="";
+  for(const m of GMODELS){
+    try{
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:[{role:"user",parts:[{text:t}]}],
+          generationConfig:{temperature:.7,maxOutputTokens:400}})});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok){lastErr=(j.error&&j.error.message)||("HTTP "+r.status);continue}
+      const out=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).filter(Boolean).join("");
+      if(out)return out;
+      lastErr="empty response";
+    }catch(e){lastErr="network blocked ("+(e.message||e)+")"}
+  }
+  window.__gerr=lastErr;return null;
+}
+async function send(){
+  const t=ask.value.trim();if(!t)return;ask.value="";haptic(6);push(t,"u");
+  const box=push("…","j");
+  const g=await gemini(t);
+  if(g){box.innerHTML='<span class="who">JARVIS</span>'+g;speak(g);chat.scrollTop=chat.scrollHeight;return}
+  if(sampler){try{const res=await sampler([{role:"user",content:sysPrompt()+"\n\nSir Abderhman asks: "+t}]);
+    if(res&&res.text){box.innerHTML='<span class="who">JARVIS</span>'+res.text;speak(res.text);chat.scrollTop=chat.scrollHeight;return}}catch(e){}}
+  const o=offline(t);box.innerHTML='<span class="who">JARVIS</span>'+o;speak(o);chat.scrollTop=chat.scrollHeight;
+}
+
+/* ============ ALERTS ============ */
+["a1","a2","a3"].forEach(id=>{const v=localStorage.getItem(id);if(v)document.getElementById(id).value=v});
+let timers=[];
+async function armAlarms(){
+  timers.forEach(clearTimeout);timers=[];let perm="denied";
+  try{if("Notification"in window)perm=await Notification.requestPermission()}catch(e){}
+  const msgs=["Sir Abderhman. Gym window one.","Sir Abderhman — training time. "+DAYS[todayIdx()].k+".","Sir Abderhman: protein, water, sleep. Log the session."];
+  ["a1","a2","a3"].forEach((id,n)=>{const v=document.getElementById(id).value;if(!v)return;
+    localStorage.setItem(id,v);const[h,m]=v.split(":").map(Number);const t=new Date();t.setHours(h,m,0,0);
+    if(t<=new Date())t.setDate(t.getDate()+1);timers.push(setTimeout(()=>fire(msgs[n]),t-new Date()))});
+  alarmState.textContent=perm==="granted"?"Armed with system notifications.":"Armed — in-app only (notifications blocked).";
+  speak("Alerts armed, Sir Abderhman.");
+}
+function fire(m){beep();haptic(50);speak(m);
+  try{if("Notification"in window&&Notification.permission==="granted")new Notification("JARVIS",{body:m,icon:ICON_180})}catch(e){}}
+function saveKey(){const v=gkey.value.trim();if(!v)return;localStorage.setItem("gkey",v);setEngine();
+  keyState.textContent="Key saved. Run Test key to verify.";speak("Gemini core linked, Sir Abderhman.")}
+async function testKey(){const v=(gkey.value.trim()||localStorage.getItem("gkey")||"");
+  if(!v){keyState.textContent="No key entered.";return}
+  localStorage.setItem("gkey",v);keyState.textContent="Testing…";
+  const r=await gemini("Say online in three words.");
+  keyState.textContent=r?"✓ Gemini responding. Assistant now runs on your key.":"✗ Failed — "+(window.__gerr||"unknown")+". If it says network blocked, host this file on Netlify or GitHub Pages.";
+}
+if(localStorage.getItem("gkey"))gkey.value=localStorage.getItem("gkey");
+const H=new Date().getHours();
+greet.textContent=(H<12?"good morning":H<18?"good afternoon":"good evening")+" · sir abderhman";
+
+/* ============ PWA · install ============ */
+function makeIcon(size){
+  const c=document.createElement("canvas");c.width=c.height=size;
+  const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,size,size);
+  g.addColorStop(0,"#ff3d54");g.addColorStop(1,"#a3101f");
+  const r=size*0.235;
+  x.beginPath();
+  x.moveTo(r,0);x.lineTo(size-r,0);x.arcTo(size,0,size,r,r);
+  x.lineTo(size,size-r);x.arcTo(size,size,size-r,size,r);
+  x.lineTo(r,size);x.arcTo(0,size,0,size-r,r);
+  x.lineTo(0,r);x.arcTo(0,0,r,0,r);
+  x.closePath();x.fillStyle=g;x.fill();
+  const h=x.createLinearGradient(0,0,0,size*0.5);
+  h.addColorStop(0,"rgba(255,255,255,.35)");h.addColorStop(1,"rgba(255,255,255,0)");
+  x.fillStyle=h;x.fill();
+  x.fillStyle="#fff";
+  x.font=`700 ${size*0.56}px -apple-system,BlinkMacSystemFont,sans-serif`;
+  x.textAlign="center";x.textBaseline="middle";
+  x.fillText("J",size/2,size*0.53);
+  return c.toDataURL("image/png");
+}
+const ICON_180=makeIcon(180);
+const ICON_192=makeIcon(192);
+const ICON_512=makeIcon(512);
+document.querySelector('link[rel="apple-touch-icon"]').href=ICON_180;
+try{
+  const manifest={
+    name:"JARVIS · Training System",
+    short_name:"JARVIS",
+    description:"Personal gym intelligence for Sir Abderhman.",
+    start_url:".",
+    display:"standalone",
+    orientation:"portrait",
+    background_color:"#050507",
+    theme_color:"#050507",
+    icons:[
+      {src:ICON_192,sizes:"192x192",type:"image/png"},
+      {src:ICON_512,sizes:"512x512",type:"image/png",purpose:"any maskable"}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:"application/json"});
+  document.querySelector('link[rel="manifest"]').href=URL.createObjectURL(blob);
+}catch(e){}
+
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+const standalone=window.navigator.standalone===true||window.matchMedia("(display-mode: standalone)").matches;
+function showInstall(){document.getElementById("installModal").classList.remove("hidden");haptic(8)}
+function hideInstall(){document.getElementById("installModal").classList.add("hidden")}
+function hideA2HS(){document.getElementById("a2hs").classList.add("hidden");localStorage.setItem("a2hsHid","1")}
+if(isIOS&&!standalone&&!localStorage.getItem("a2hsHid")){
+  setTimeout(()=>document.getElementById("a2hs").classList.remove("hidden"),1400);
+}
+document.getElementById("installModal").addEventListener("click",e=>{
+  if(e.target.id==="installModal")hideInstall();
+});
+</script>
+</body>
+</html>
