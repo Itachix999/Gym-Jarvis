@@ -550,12 +550,12 @@ nav.tabs{
   </div>
   <div class="card">
     <div class="lbl">Gemini API key</div>
-    <input id="gkey" type="password" placeholder="Built-in key active" autocomplete="off">
+    <input id="gkey" type="password" placeholder="AIza…" autocomplete="off">
     <div class="row" style="margin-top:12px">
       <button class="btn pri" style="flex:1" onclick="saveKey()">Save</button>
       <button class="btn" onclick="testKey()">Test key</button>
     </div>
-    <span class="hint" id="keyState">Built-in key is loaded, Sir Abderhman. You may override it here if you wish.</span>
+    <span class="hint" id="keyState">Paste your key from aistudio.google.com. Real keys start with AIza.</span>
   </div>
   <div class="card">
     <div class="lbl">System</div>
@@ -598,9 +598,6 @@ nav.tabs{
 </div>
 
 <script>
-/* ============ BUILT-IN GEMINI KEY ============ */
-const DEFAULT_GKEY="";
-
 /* ============ DATA ============ */
 const DAYS=[
 {k:"Upper A",focus:"Chest, shoulders, triceps, core.",ex:[
@@ -695,7 +692,7 @@ const todayIdx=()=>WEEK[new Date().getDay()];
 const tomorrowIdx=()=>WEEK[(new Date().getDay()+1)%7];
 const dkey=()=>new Date().toDateString();
 const haptic=(ms=8)=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
-const getKey=()=>localStorage.getItem("gkey")||DEFAULT_GKEY;
+const getKey=()=>localStorage.getItem("gkey")||"";
 
 /* ============ VOICE CACHE ============ */
 let VOICES_CACHE=[];
@@ -937,7 +934,6 @@ function push(t,who){const d=document.createElement("div");d.className="msg "+(w
 push("Systems online, Sir Abderhman. Today is "+DAYS[todayIdx()].k+" — "+DAYS[todayIdx()].focus+"\n\nTomorrow: "+DAYS[tomorrowIdx()].k+".\n\nAsk me about today, tomorrow, warmups, technique, cardio, or fuel.","j");
 
 function offline(t){
-  /* identity FIRST — highest priority */
   if(/who.*(own|maker|creator|built|made) you|who is your (own|boss|master|creator)|your owner|who do you (work|belong)/i.test(t)){
     return "You are my owner, Sir Abderhman. I was built for you and I answer only to you. My purpose is your training, your cardio, your fuel, and your discipline. Nothing else matters.";
   }
@@ -947,23 +943,19 @@ function offline(t){
   if(/^(thank|thanks|good job|well done)/i.test(t.trim())){
     return "Always a pleasure, Sir Abderhman. Now — back to work.";
   }
-  /* tomorrow */
   if(/tomorrow|next day/i.test(t)){
     const d=DAYS[tomorrowIdx()];
     const list=d.ex.map((e,i)=>`${i+1}. ${e.n} — ${e.s>1?e.s+"×":""}${e.r}${e.rest!=="—"?", rest "+e.rest:""}`).join("\n");
     return `Tomorrow is ${d.k}, Sir Abderhman. ${d.focus}\n\n${list}\n\nPrepare your bag and pre-workout meal tonight.`;
   }
-  /* weekly split */
   if(/(whole|full|weekly|this) week|weekly split|schedule|week plan/i.test(t)){
     return DOW.map((n,i)=>`${n}: ${DAYS[WEEK[i]].k}`).join("\n");
   }
-  /* today */
   if(/what.*(today|train|workout|program|session)|today.*(workout|plan|train|program|session)|my (workout|plan|session|program|training)/i.test(t)){
     const d=DAYS[todayIdx()];
     const list=d.ex.map((e,i)=>`${i+1}. ${e.n} — ${e.s>1?e.s+"×":""}${e.r}${e.rest!=="—"?", rest "+e.rest:""}`).join("\n");
     return `Today is ${d.k}, Sir Abderhman. ${d.focus}\n\n${list}\n\nShall I walk you through the first exercise?`;
   }
-  /* general KB */
   const KB=[
    [/warm ?up|warmup/i,"Warmup, Sir Abderhman: 5 minutes bike or incline walk, then 10 arm circles, 10 bodyweight squats, 10 hip hinges, 10 band pull-aparts. Then two ramp sets of the first lift at 50% and 75%. Eight minutes total."],
    [/motivat|lazy|tired|no energy|give up|bored|quit/i,"Motivation is a guest, Sir Abderhman. Discipline lives here. The rule: go and perform only the first exercise. If you still feel dead after that set, you may leave. You will not leave."],
@@ -984,24 +976,35 @@ function offline(t){
   return "My offline core covers training, cardio, nutrition, recovery and discipline, Sir Abderhman. Today is "+d.k+" and tomorrow is "+DAYS[tomorrowIdx()].k+". Ask about today's workout, tomorrow's workout, warmup, protein, calories, cardio, plateaus, soreness or swaps.";
 }
 function q(t){ask.value=t;send()}
-const GMODELS=["gemini-2.0-flash","gemini-1.5-flash","gemini-flash-latest","gemini-1.5-flash-latest"];
+
+/* Working model list — updated for 2025. No -latest suffixes. */
+const GMODELS=["gemini-2.0-flash","gemini-2.5-flash","gemini-1.5-flash","gemini-1.5-flash-8b","gemini-2.0-flash-exp"];
+
 async function gemini(t){
-  const key=getKey();if(!key)return null;
+  const key=getKey();
+  if(!key)return null;
   let lastErr="";
   for(const m of GMODELS){
     try{
       const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`,{
         method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:[{role:"user",parts:[{text:t}]}],
-          generationConfig:{temperature:.7,maxOutputTokens:400}})});
+        body:JSON.stringify({
+          systemInstruction:{parts:[{text:sysPrompt()}]},
+          contents:[{role:"user",parts:[{text:t}]}],
+          generationConfig:{temperature:.7,maxOutputTokens:400}
+        })});
       const j=await r.json().catch(()=>({}));
-      if(!r.ok){lastErr=(j.error&&j.error.message)||("HTTP "+r.status);continue}
+      if(!r.ok){
+        lastErr=(j.error&&j.error.message)||("HTTP "+r.status);
+        continue;
+      }
       const out=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).filter(Boolean).join("");
       if(out)return out;
       lastErr="empty response";
     }catch(e){lastErr="network blocked ("+(e.message||e)+")"}
   }
-  window.__gerr=lastErr;return null;
+  window.__gerr=lastErr;
+  return null;
 }
 async function send(){
   const t=ask.value.trim();if(!t)return;ask.value="";haptic(6);push(t,"u");
@@ -1028,19 +1031,33 @@ async function armAlarms(){
 }
 function fire(m){beep();haptic(50);speak(m);
   try{if("Notification"in window&&Notification.permission==="granted")new Notification("JARVIS",{body:m,icon:ICON_180})}catch(e){}}
+
 function saveKey(){
   const v=gkey.value.trim();
-  if(!v){localStorage.removeItem("gkey");setEngine();keyState.textContent="Reverted to built-in key.";speak("Reverted to built-in key, Sir Abderhman.");return}
+  if(!v){
+    localStorage.removeItem("gkey");setEngine();
+    keyState.textContent="Key cleared. Running offline core.";
+    return;
+  }
+  if(!/^AIza/.test(v)){
+    keyState.textContent="⚠ That does not look like a Gemini key. Real keys start with AIza.";
+    // still save it — maybe Google changed format
+  }
   localStorage.setItem("gkey",v);setEngine();
-  keyState.textContent="Custom key saved. Run Test key to verify.";
-  speak("Key overridden, Sir Abderhman.");
+  keyState.textContent="Key saved. Run Test key to verify.";
+  speak("Gemini core linked, Sir Abderhman.");
 }
 async function testKey(){
   const v=gkey.value.trim()||getKey();
-  if(!v){keyState.textContent="No key available.";return}
+  if(!v){keyState.textContent="No key entered. Paste one from aistudio.google.com.";return}
+  localStorage.setItem("gkey",v);
   keyState.textContent="Testing…";
   const r=await gemini("Say online in three words.");
-  keyState.textContent=r?"✓ Gemini responding. Assistant now runs on your key.":"✗ Failed — "+(window.__gerr||"unknown")+". If it says network blocked, host this file on Netlify or GitHub Pages, or the built-in key may be invalid.";
+  if(r){
+    keyState.textContent="✓ Gemini responding. Assistant now runs on your key.";
+  } else {
+    keyState.textContent="✗ Failed — "+(window.__gerr||"unknown")+". Check the key starts with AIza and that it is enabled for the Generative Language API.";
+  }
 }
 if(localStorage.getItem("gkey"))gkey.value=localStorage.getItem("gkey");
 const H=new Date().getHours();
