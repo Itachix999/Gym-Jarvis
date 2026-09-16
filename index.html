@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#050507">
 <link rel="apple-touch-icon" href="data:,">
 <link rel="manifest" href="data:,">
-<title>Abderhman - Workout Program</title>
+<title>JARVIS · Training System</title>
 <style>
 :root{
   --bg:#050507;
@@ -298,7 +298,6 @@ th{font-family:var(--m);font-size:9.5px;color:var(--tx3);letter-spacing:.1em;tex
   font-weight:500;letter-spacing:-.01em;
 }
 .quote-card blockquote::before{content:'“';color:var(--r);font-size:28px;line-height:0;vertical-align:-8px;margin-right:4px;font-style:normal}
-.quote-card blockquote::after{content:'”';color:var(--r);font-size:28px;line-height:0;vertical-align:-8px;margin-left:4px;font-style:normal}
 .quote-author{
   margin-top:14px;font-family:var(--m);font-size:11px;letter-spacing:.1em;
   color:var(--r);text-transform:uppercase;font-weight:600;
@@ -426,7 +425,6 @@ nav.tabs{
 
 <div class="wrap">
 
-<!-- TODAY -->
 <section id="s-today" class="on">
   <div class="card accent">
     <div class="lbl">Today</div>
@@ -465,7 +463,6 @@ nav.tabs{
   </div>
 </section>
 
-<!-- PLAN -->
 <section id="s-plan">
   <div class="card accent">
     <div class="lbl">Protocol</div>
@@ -482,7 +479,6 @@ nav.tabs{
   </div>
 </section>
 
-<!-- CARDIO -->
 <section id="s-cardio">
   <div class="card accent">
     <div class="lbl">Conditioning</div>
@@ -497,7 +493,6 @@ nav.tabs{
   <div id="cardioList"></div>
 </section>
 
-<!-- FUEL -->
 <section id="s-food">
   <div class="card accent">
     <div class="lbl">Targets · 105 kg / 179 cm</div>
@@ -517,7 +512,6 @@ nav.tabs{
   </div>
 </section>
 
-<!-- JARVIS -->
 <section id="s-jarvis">
   <div class="card">
     <div class="lbl">Assistant · gym · cardio · fat loss</div>
@@ -538,7 +532,6 @@ nav.tabs{
   </div>
 </section>
 
-<!-- SETTINGS -->
 <section id="s-set">
   <div class="card">
     <div class="lbl">Gym alerts · 3 daily</div>
@@ -555,7 +548,7 @@ nav.tabs{
       <button class="btn pri" style="flex:1" onclick="saveKey()">Save</button>
       <button class="btn" onclick="testKey()">Test key</button>
     </div>
-    <span class="hint" id="keyState">Paste your key from aistudio.google.com. Real keys start with AIza.</span>
+    <span class="hint" id="keyState"></span>
   </div>
   <div class="card">
     <div class="lbl">System</div>
@@ -645,7 +638,6 @@ const CARDIO=[
 const WEEK=[5,0,1,4,2,3,4];
 const DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-/* ============ VOICES (quotes) ============ */
 const QUOTES=[
  {q:"It ain't about how hard you hit. It's about how hard you can get hit and keep moving forward.",a:"Rocky Balboa"},
  {q:"Every champion was once a contender that refused to give up.",a:"Rocky Balboa"},
@@ -671,20 +663,14 @@ const QUOTES=[
  {q:"I've failed over and over and over again in my life. And that is why I succeed.",a:"Michael Jordan"}
 ];
 let qIdx=Math.floor(Math.random()*QUOTES.length);
-function renderQuote(read){
+function renderQuote(){
   const q=QUOTES[qIdx];
   quoteBox.innerHTML=
     `<blockquote>${q.q}</blockquote>`+
     `<div class="quote-author">— ${q.a}</div>`;
-  if(read)speak(q.q+". "+q.a+".");
 }
-function nextQuote(){
-  qIdx=(qIdx+1)%QUOTES.length;
-  haptic(6);
-  renderQuote(true);
-}
+function nextQuote(){qIdx=(qIdx+1)%QUOTES.length;haptic(6);renderQuote();}
 
-/* ============ STATE ============ */
 const S=JSON.parse(localStorage.getItem("jarvis")||"{}");
 S.done=S.done||{};S.weights=S.weights||[];S.streak=S.streak||0;
 const save=()=>localStorage.setItem("jarvis",JSON.stringify(S));
@@ -692,37 +678,7 @@ const todayIdx=()=>WEEK[new Date().getDay()];
 const tomorrowIdx=()=>WEEK[(new Date().getDay()+1)%7];
 const dkey=()=>new Date().toDateString();
 const haptic=(ms=8)=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
-const getKey=()=>localStorage.getItem("gkey")||"";
 
-/* ============ VOICE CACHE ============ */
-let VOICES_CACHE=[];
-function cacheVoices(){try{VOICES_CACHE=window.speechSynthesis?speechSynthesis.getVoices():[]}catch(e){}}
-if(window.speechSynthesis){cacheVoices();speechSynthesis.onvoiceschanged=cacheVoices;}
-
-function pickMaleVoice(){
-  const vs=VOICES_CACHE.length?VOICES_CACHE:(window.speechSynthesis?speechSynthesis.getVoices():[]);
-  const male=[
-    /\bDaniel\b/i,/\bAlex\b/i,/\bArthur\b/i,/\bOliver\b/i,/\bFred\b/i,/\bTom\b/i,
-    /\bAaron\b/i,/\bRishi\b/i,/\bJamie\b/i,/\bRalph\b/i,/\bReed\b/i,
-    /Google UK English Male/i,/UK English Male/i,/US English Male/i,
-    /Microsoft (David|Mark|Guy|Ryan|Eric|Christopher)/i,
-    /\bMale\b/i
-  ];
-  const female=[
-    /Samantha/i,/Karen/i,/Moira/i,/Tessa/i,/Victoria/i,/Fiona/i,/Serena/i,/Allison/i,
-    /Ava/i,/Susan/i,/Nicky/i,/Zosia/i,/Nora/i,/Kathy/i,/Princess/i,/\bFemale\b/i,
-    /Google US English/i
-  ];
-  for(const p of male){
-    const v=vs.find(x=>p.test(x.name)&&/^en/i.test(x.lang));
-    if(v&&!female.some(f=>f.test(v.name)))return {voice:v,isMale:true};
-  }
-  const en=vs.find(x=>/en-GB/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));
-  if(en)return {voice:en,isMale:!female.some(f=>f.test(en.name))};
-  return {voice:null,isMale:true};
-}
-
-/* ============ NAV ============ */
 const tabs=[...document.querySelectorAll(".tab")];
 tabs.forEach(b=>b.onclick=()=>{
   haptic(6);
@@ -743,7 +699,6 @@ document.addEventListener("touchend",e=>{
   }
 },{passive:true});
 
-/* ============ RENDER ============ */
 const yt=n=>"https://www.youtube.com/results?search_query="+encodeURIComponent(n+" proper form tutorial");
 const P={
  squat:[{h:[60,16],b:"M60 23 L60 52 M60 52 L52 74 L52 96 M60 52 L68 74 L68 96 M60 30 L46 30 M60 30 L74 30",e:"M38 30 L82 30"},
@@ -832,7 +787,6 @@ daySel.innerHTML=DAYS.map((d,i)=>`<option value="${i}" ${i===todayIdx()?"selecte
 cardioList.innerHTML=CARDIO.map(c=>`<div class="card"><div class="lbl">${c.w}</div><h2>${c.n}</h2><p style="margin-top:8px">${c.c}</p><span class="tag r">${c.t}</span></div>`).join("");
 renderToday();renderPlan();renderW();renderQuote();
 
-/* ============ TIMER ============ */
 let T=90,run=null,left=90;
 const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 const paint=()=>clock.textContent=fmt(left);
@@ -845,29 +799,18 @@ function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)(
  o.connect(g);g.connect(a.destination);o.frequency.value=760;g.gain.setValueAtTime(.2,a.currentTime);
  g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.6);o.start();o.stop(a.currentTime+.6)}catch(e){}}
 
-/* ============ VOICE OUT ============ */
 let VOICE=localStorage.getItem("voice")!=="0";
 vToggle.textContent=VOICE?"VOICE ON":"VOICE OFF";
 vToggle.classList.toggle("live",VOICE);
 vToggle.onclick=()=>{VOICE=!VOICE;localStorage.setItem("voice",VOICE?"1":"0");
   vToggle.textContent=VOICE?"VOICE ON":"VOICE OFF";vToggle.classList.toggle("live",VOICE);
   if(VOICE)speak("Voice online, Sir Abderhman.")};
+function speak(t){if(!VOICE||!window.speechSynthesis)return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[*#_`]/g,""));
+  const vs=speechSynthesis.getVoices();
+  const v=vs.find(x=>/Daniel|Arthur|Oliver|UK English Male/i.test(x.name))||vs.find(x=>/en-GB/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang));
+  if(v)u.voice=v;u.rate=.98;u.pitch=.82;speechSynthesis.speak(u)}catch(e){}}
 
-function speak(t){
-  if(!VOICE||!window.speechSynthesis)return;
-  try{
-    speechSynthesis.cancel();
-    const clean=t.replace(/[*#_`"“”]/g,"");
-    const u=new SpeechSynthesisUtterance(clean);
-    const pick=pickMaleVoice();
-    if(pick.voice)u.voice=pick.voice;
-    u.rate=.97;
-    u.pitch=pick.isMale?0.78:0.5;
-    speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-/* ============ VOICE IN ============ */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let rec=null,listening=false;
 if(SR){
@@ -884,7 +827,6 @@ function startRec(){try{speechSynthesis&&speechSynthesis.cancel();rec.start();li
   micBtn.classList.add("rec");ask.placeholder="Listening…"}catch(e){}}
 function stopRec(){listening=false;micBtn.classList.remove("rec");ask.placeholder="Speak or type…";try{rec.stop()}catch(e){}}
 
-/* ============ JARVIS BRAIN ============ */
 function listEx(d){
   return d.ex.map((e,i)=>`${i+1}. ${e.n} — ${e.s>1?e.s+"×":""}${e.r}${e.rest!=="—"?", rest "+e.rest:""}. ${e.c}`).join("\n");
 }
@@ -925,7 +867,7 @@ BEHAVIOUR:
 let sampler=null;
 (async()=>{try{sampler=window.claude?await window.claude.use("sample"):null}catch(e){}setEngine()})();
 function setEngine(){
-  const k=getKey();
+  const k=localStorage.getItem("gkey");
   engine.textContent="Engine : "+(k?"Online Core → ":"")+(sampler?"":"")+"Offline Core";
 }
 function push(t,who){const d=document.createElement("div");d.className="msg "+(who==="u"?"u":"j");
@@ -971,40 +913,31 @@ function offline(t){
    [/plateau|not losing|stuck|scale/i,"Plateau protocol: fourteen days with no movement, then cut 150 kcal or add 1500 steps — one change only. Judge weekly averages, never single mornings."],
    [/quote|motivation quote|rocky|arnold|goggins/i,()=>{const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];return `${q.q} — ${q.a}`}]
   ];
-  for(const[re,a] of KB){if(re.test(t))return typeof a==="function"?a():a}
+  for(const[re,a] of KB){if(re.test(a))continue;if(re.test(t))return typeof a==="function"?a():a}
   const d=DAYS[todayIdx()];
   return "My offline core covers training, cardio, nutrition, recovery and discipline, Sir Abderhman. Today is "+d.k+" and tomorrow is "+DAYS[tomorrowIdx()].k+". Ask about today's workout, tomorrow's workout, warmup, protein, calories, cardio, plateaus, soreness or swaps.";
 }
 function q(t){ask.value=t;send()}
 
-/* Working model list — updated for 2025. No -latest suffixes. */
-const GMODELS=["gemini-2.0-flash","gemini-2.5-flash","gemini-1.5-flash","gemini-1.5-flash-8b","gemini-2.0-flash-exp"];
-
+/* ============ GEMINI — YOUR WORKING MODEL LIST ============ */
+const GMODELS=["gemini-2.0-flash","gemini-1.5-flash","gemini-flash-latest","gemini-1.5-flash-latest"];
 async function gemini(t){
-  const key=getKey();
-  if(!key)return null;
+  const key=localStorage.getItem("gkey");if(!key)return null;
   let lastErr="";
   for(const m of GMODELS){
     try{
       const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`,{
         method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          systemInstruction:{parts:[{text:sysPrompt()}]},
-          contents:[{role:"user",parts:[{text:t}]}],
-          generationConfig:{temperature:.7,maxOutputTokens:400}
-        })});
+        body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:[{role:"user",parts:[{text:t}]}],
+          generationConfig:{temperature:.7,maxOutputTokens:400}})});
       const j=await r.json().catch(()=>({}));
-      if(!r.ok){
-        lastErr=(j.error&&j.error.message)||("HTTP "+r.status);
-        continue;
-      }
+      if(!r.ok){lastErr=(j.error&&j.error.message)||("HTTP "+r.status);continue}
       const out=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).filter(Boolean).join("");
       if(out)return out;
       lastErr="empty response";
     }catch(e){lastErr="network blocked ("+(e.message||e)+")"}
   }
-  window.__gerr=lastErr;
-  return null;
+  window.__gerr=lastErr;return null;
 }
 async function send(){
   const t=ask.value.trim();if(!t)return;ask.value="";haptic(6);push(t,"u");
@@ -1016,7 +949,6 @@ async function send(){
   const o=offline(t);box.innerHTML='<span class="who">JARVIS</span>'+o;speak(o);chat.scrollTop=chat.scrollHeight;
 }
 
-/* ============ ALERTS ============ */
 ["a1","a2","a3"].forEach(id=>{const v=localStorage.getItem(id);if(v)document.getElementById(id).value=v});
 let timers=[];
 async function armAlarms(){
@@ -1031,39 +963,17 @@ async function armAlarms(){
 }
 function fire(m){beep();haptic(50);speak(m);
   try{if("Notification"in window&&Notification.permission==="granted")new Notification("JARVIS",{body:m,icon:ICON_180})}catch(e){}}
-
-function saveKey(){
-  const v=gkey.value.trim();
-  if(!v){
-    localStorage.removeItem("gkey");setEngine();
-    keyState.textContent="Key cleared. Running offline core.";
-    return;
-  }
-  if(!/^AIza/.test(v)){
-    keyState.textContent="⚠ That does not look like a Gemini key. Real keys start with AIza.";
-    // still save it — maybe Google changed format
-  }
-  localStorage.setItem("gkey",v);setEngine();
-  keyState.textContent="Key saved. Run Test key to verify.";
-  speak("Gemini core linked, Sir Abderhman.");
-}
-async function testKey(){
-  const v=gkey.value.trim()||getKey();
-  if(!v){keyState.textContent="No key entered. Paste one from aistudio.google.com.";return}
-  localStorage.setItem("gkey",v);
-  keyState.textContent="Testing…";
+function saveKey(){const v=gkey.value.trim();if(!v)return;localStorage.setItem("gkey",v);setEngine();
+  keyState.textContent="Key saved. Run Test key to verify.";speak("Gemini core linked, Sir Abderhman.")}
+async function testKey(){const v=(gkey.value.trim()||localStorage.getItem("gkey")||"");
+  if(!v){keyState.textContent="No key entered.";return}
+  localStorage.setItem("gkey",v);keyState.textContent="Testing…";
   const r=await gemini("Say online in three words.");
-  if(r){
-    keyState.textContent="✓ Gemini responding. Assistant now runs on your key.";
-  } else {
-    keyState.textContent="✗ Failed — "+(window.__gerr||"unknown")+". Check the key starts with AIza and that it is enabled for the Generative Language API.";
-  }
-}
+  keyState.textContent=r?"✓ Gemini responding. Assistant now runs on your key.":"✗ Failed — "+(window.__gerr||"unknown")+". If it says network blocked, host this file on Netlify or GitHub Pages.";}
 if(localStorage.getItem("gkey"))gkey.value=localStorage.getItem("gkey");
 const H=new Date().getHours();
 greet.textContent=(H<12?"good morning":H<18?"good afternoon":"good evening")+" · sir abderhman";
 
-/* ============ PWA · install ============ */
 function makeIcon(size){
   const c=document.createElement("canvas");c.width=c.height=size;
   const x=c.getContext("2d");
@@ -1091,14 +1001,10 @@ const ICON_512=makeIcon(512);
 document.querySelector('link[rel="apple-touch-icon"]').href=ICON_180;
 try{
   const manifest={
-    name:"JARVIS · Training System",
-    short_name:"JARVIS",
+    name:"JARVIS · Training System",short_name:"JARVIS",
     description:"Personal gym intelligence for Sir Abderhman.",
-    start_url:".",
-    display:"standalone",
-    orientation:"portrait",
-    background_color:"#050507",
-    theme_color:"#050507",
+    start_url:".",display:"standalone",orientation:"portrait",
+    background_color:"#050507",theme_color:"#050507",
     icons:[
       {src:ICON_192,sizes:"192x192",type:"image/png"},
       {src:ICON_512,sizes:"512x512",type:"image/png",purpose:"any maskable"}
