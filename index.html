@@ -13,27 +13,14 @@
 <title>JARVIS · Training System</title>
 <style>
 :root{
-  --bg:#050507;
-  --surf:rgba(255,255,255,.055);
-  --surf2:rgba(255,255,255,.035);
-  --glass-hi:rgba(255,255,255,.14);
-  --glass-lo:rgba(255,255,255,.02);
-  --line:rgba(255,255,255,.09);
-  --line2:rgba(255,255,255,.16);
-  --r:#ff2d44;
-  --r-lo:rgba(255,45,68,.18);
-  --r-mid:rgba(255,45,68,.5);
-  --r-glow:rgba(255,45,68,.4);
-  --tx:#ffffff;
-  --tx2:rgba(255,255,255,.68);
-  --tx3:rgba(255,255,255,.42);
-  --tx4:rgba(255,255,255,.25);
+  --bg:#050507;--surf:rgba(255,255,255,.055);--surf2:rgba(255,255,255,.035);
+  --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
+  --r:#ff2d44;--r-lo:rgba(255,45,68,.18);--r-mid:rgba(255,45,68,.5);--r-glow:rgba(255,45,68,.4);
+  --tx:#fff;--tx2:rgba(255,255,255,.68);--tx3:rgba(255,255,255,.42);
   --ok:#34d17a;
   --f:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Inter','Segoe UI',Roboto,sans-serif;
   --m:'SF Mono','JetBrains Mono',ui-monospace,Menlo,monospace;
-  --rad:22px;
-  --rad-s:14px;
-  --blur:blur(32px) saturate(180%);
+  --rad:22px;--rad-s:14px;--blur:blur(32px) saturate(180%);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;overflow-x:hidden}
@@ -48,13 +35,11 @@ body{
   background-attachment:fixed;
 }
 .wrap{max-width:780px;margin:0 auto;padding:0 16px}
-
 header{
   position:sticky;top:0;z-index:40;
   padding:calc(10px + env(safe-area-inset-top)) 0 10px;
   background:linear-gradient(180deg,rgba(5,5,7,.85),rgba(5,5,7,.4) 70%,transparent);
-  backdrop-filter:blur(20px) saturate(160%);
-  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
   border-bottom:1px solid rgba(255,255,255,.05);
 }
 .hd{display:flex;align-items:center;gap:12px}
@@ -62,10 +47,7 @@ header{
   width:38px;height:38px;flex:0 0 38px;border-radius:12px;
   background:linear-gradient(155deg,#ff3d54,#a3101f);
   display:grid;place-items:center;font-family:var(--m);font-weight:700;font-size:16px;color:#fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.4),
-    0 0 0 1px rgba(255,45,68,.4),
-    0 8px 24px -8px rgba(255,45,68,.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(255,45,68,.4),0 8px 24px -8px rgba(255,45,68,.6);
   letter-spacing:-.02em;
 }
 .ttl{font-size:15px;font-weight:700;letter-spacing:-.01em;margin:0}
@@ -75,34 +57,24 @@ header{
   border:1px solid var(--line2);border-radius:999px;color:var(--tx2);
   font-size:11px;font-weight:600;padding:8px 13px;cursor:pointer;font-family:var(--m);
   letter-spacing:.06em;transition:all .2s;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
-  backdrop-filter:blur(20px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);backdrop-filter:blur(20px);
 }
 .iconbtn.live{
   color:#fff;border-color:var(--r-mid);
   background:linear-gradient(180deg,rgba(255,45,68,.28),rgba(255,45,68,.12));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 0 20px -4px var(--r-glow);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 20px -4px var(--r-glow);
 }
 .iconbtn:active{transform:scale(.96)}
-
 section{display:none;padding:18px 0 8px}
 section.on{display:block;animation:slideIn .28s cubic-bezier(.2,.9,.3,1)}
 @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
 .card{
   position:relative;
   background:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
-  backdrop-filter:var(--blur);
-  -webkit-backdrop-filter:var(--blur);
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:var(--rad);
+  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.10);border-radius:var(--rad);
   padding:18px;margin-bottom:14px;
-  box-shadow:
-    0 20px 50px -24px rgba(0,0,0,.8),
-    0 1px 0 rgba(255,255,255,.05) inset,
-    inset 0 1px 0 rgba(255,255,255,.14);
+  box-shadow:0 20px 50px -24px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.05) inset,inset 0 1px 0 rgba(255,255,255,.14);
   overflow:hidden;
 }
 .card::before{
@@ -112,47 +84,35 @@ section.on{display:block;animation:slideIn .28s cubic-bezier(.2,.9,.3,1)}
   -webkit-mask-image:linear-gradient(180deg,#000,transparent 32%);
 }
 .card.accent{
-  border-left:0;
-  border-top:1px solid rgba(255,45,68,.28);
-  box-shadow:
-    0 20px 50px -24px rgba(0,0,0,.8),
-    0 0 60px -30px rgba(255,45,68,.4) inset,
-    inset 0 1px 0 rgba(255,255,255,.16);
+  border-left:0;border-top:1px solid rgba(255,45,68,.28);
+  box-shadow:0 20px 50px -24px rgba(0,0,0,.8),0 0 60px -30px rgba(255,45,68,.4) inset,inset 0 1px 0 rgba(255,255,255,.16);
 }
 .card.accent::after{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(255,45,68,.6),transparent);
 }
-.lbl{
-  font-family:var(--m);font-size:9.5px;letter-spacing:.14em;color:var(--tx3);
-  text-transform:uppercase;margin:0 0 12px;font-weight:600;
-}
+.lbl{font-family:var(--m);font-size:9.5px;letter-spacing:.14em;color:var(--tx3);text-transform:uppercase;margin:0 0 12px;font-weight:600}
 h2{font-size:19px;font-weight:700;margin:0 0 4px;letter-spacing:-.02em}
 h3{font-size:15px;font-weight:600;margin:0;letter-spacing:-.01em}
 p{margin:0 0 10px;color:var(--tx2);font-size:14px;line-height:1.55}
 p:last-child{margin-bottom:0}
 b{color:var(--tx);font-weight:600}
-
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px}
 .kpi{
   position:relative;
   background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
   border:1px solid rgba(255,255,255,.08);border-radius:var(--rad-s);
-  padding:13px 8px;text-align:center;
-  backdrop-filter:blur(20px);
+  padding:13px 8px;text-align:center;backdrop-filter:blur(20px);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
 }
 .kpi b{display:block;font-family:var(--m);font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
 .kpi b.r{color:var(--r);text-shadow:0 0 20px var(--r-glow)}
 .kpi span{font-size:9px;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;font-weight:600}
-
 .ex{
   position:relative;
-  border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;
-  margin-bottom:10px;
+  border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:10px;
   background:linear-gradient(155deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
-  backdrop-filter:blur(20px);
-  display:flex;gap:12px;
+  backdrop-filter:blur(20px);display:flex;gap:12px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
 }
 .meta{font-family:var(--m);font-size:11.5px;color:var(--tx);margin-top:7px;letter-spacing:.01em}
@@ -161,8 +121,7 @@ b{color:var(--tx);font-weight:600}
 .demo{
   width:88px;height:76px;flex:0 0 88px;border:1px solid rgba(255,255,255,.10);border-radius:12px;
   background:radial-gradient(75% 75% at 50% 35%,rgba(255,255,255,.06),rgba(0,0,0,.15));
-  overflow:hidden;position:relative;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  overflow:hidden;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
 .demo svg{width:100%;height:100%;display:block}
 .demo .body{stroke:var(--tx);stroke-width:3.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -181,32 +140,25 @@ a.lnk:active{border-color:var(--r);color:var(--r)}
 .chk{
   width:26px;height:26px;flex:0 0 26px;border-radius:9px;
   border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.04);
-  cursor:pointer;color:#fff;display:grid;place-items:center;font-size:14px;align-self:flex-start;
-  transition:all .2s;
+  cursor:pointer;color:#fff;display:grid;place-items:center;font-size:14px;align-self:flex-start;transition:all .2s;
 }
 .chk.on{
   background:linear-gradient(155deg,#ff3d54,#a3101f);border-color:transparent;
   box-shadow:0 0 20px -4px var(--r-glow),inset 0 1px 0 rgba(255,255,255,.3);
 }
-
 button.btn{
   position:relative;
   background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
   border:1px solid var(--line2);color:var(--tx);
   font-family:var(--f);font-size:13.5px;font-weight:600;
-  padding:12px 16px;border-radius:14px;cursor:pointer;
-  letter-spacing:-.005em;
+  padding:12px 16px;border-radius:14px;cursor:pointer;letter-spacing:-.005em;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
   transition:transform .15s,filter .15s;
 }
 button.btn:active{transform:scale(.97);filter:brightness(1.15)}
 button.btn.pri{
-  background:linear-gradient(155deg,#ff3d54,#c01428);
-  border-color:rgba(255,255,255,.15);color:#fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.35),
-    inset 0 -1px 0 rgba(0,0,0,.2),
-    0 8px 24px -10px rgba(255,45,68,.7);
+  background:linear-gradient(155deg,#ff3d54,#c01428);border-color:rgba(255,255,255,.15);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.2),0 8px 24px -10px rgba(255,45,68,.7);
 }
 button.btn.gh{color:var(--tx2);background:rgba(255,255,255,.04)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -214,77 +166,51 @@ input,select{
   background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
   border:1px solid var(--line2);color:var(--tx);border-radius:14px;
   padding:13px 14px;font-family:var(--f);font-size:15px;width:100%;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-  transition:border-color .2s,box-shadow .2s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:border-color .2s,box-shadow .2s;
 }
 input:focus,select:focus{outline:none;border-color:var(--r-mid);box-shadow:0 0 0 3px rgba(255,45,68,.15),inset 0 1px 0 rgba(255,255,255,.08)}
-label{
-  font-family:var(--m);font-size:9.5px;letter-spacing:.12em;color:var(--tx3);
-  text-transform:uppercase;display:block;margin:14px 0 7px;font-weight:600;
-}
-
+label{font-family:var(--m);font-size:9.5px;letter-spacing:.12em;color:var(--tx3);text-transform:uppercase;display:block;margin:14px 0 7px;font-weight:600}
 .timer{
   font-family:var(--m);font-size:58px;font-weight:200;text-align:center;
-  letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 16px;
-  transition:color .3s,text-shadow .3s;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 16px;transition:color .3s,text-shadow .3s;
 }
 .timer.run{color:var(--r);text-shadow:0 0 30px var(--r-glow)}
-
 .chat{
   height:46vh;min-height:250px;overflow-y:auto;
-  border:1px solid rgba(255,255,255,.09);border-radius:18px;
-  padding:14px;background:rgba(0,0,0,.25);
-  margin-bottom:12px;
-  backdrop-filter:blur(20px);
-  box-shadow:inset 0 2px 20px rgba(0,0,0,.4);
-  scroll-behavior:smooth;
+  border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:14px;background:rgba(0,0,0,.25);
+  margin-bottom:12px;backdrop-filter:blur(20px);
+  box-shadow:inset 0 2px 20px rgba(0,0,0,.4);scroll-behavior:smooth;
 }
 .chat::-webkit-scrollbar{width:4px}
 .chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
-.msg{
-  margin-bottom:12px;font-size:14px;line-height:1.6;max-width:88%;
-  padding:11px 14px;border-radius:18px;white-space:pre-wrap;
-  animation:msgIn .3s cubic-bezier(.2,.9,.3,1);
-}
+.msg{margin-bottom:12px;font-size:14px;line-height:1.6;max-width:88%;padding:11px 14px;border-radius:18px;white-space:pre-wrap;animation:msgIn .3s cubic-bezier(.2,.9,.3,1)}
 @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .msg.j{
   background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.035));
-  border:1px solid rgba(255,255,255,.09);
-  border-bottom-left-radius:6px;
+  border:1px solid rgba(255,255,255,.09);border-bottom-left-radius:6px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
 }
 .msg.u{
   background:linear-gradient(155deg,rgba(255,45,68,.32),rgba(255,45,68,.18));
-  border:1px solid rgba(255,45,68,.4);
-  margin-left:auto;color:#fff;
-  border-bottom-right-radius:6px;
+  border:1px solid rgba(255,45,68,.4);margin-left:auto;color:#fff;border-bottom-right-radius:6px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 20px -6px var(--r-glow);
 }
-.who{
-  display:block;font-family:var(--m);font-size:9px;letter-spacing:.14em;
-  color:var(--tx3);margin-bottom:6px;font-weight:600;
-}
+.who{display:block;font-family:var(--m);font-size:9px;letter-spacing:.14em;color:var(--tx3);margin-bottom:6px;font-weight:600}
 .msg.u .who{color:rgba(255,255,255,.7)}
 .mic{
   width:50px;height:50px;flex:0 0 50px;border-radius:50%;
   border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
   color:var(--tx);display:grid;place-items:center;cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
-  transition:all .2s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);transition:all .2s;
 }
 .mic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
-.mic.rec{
-  background:linear-gradient(155deg,#ff3d54,#c01428);border-color:transparent;color:#fff;
-  animation:pulse 1.2s infinite;
-}
+.mic.rec{background:linear-gradient(155deg,#ff3d54,#c01428);border-color:transparent;color:#fff;animation:pulse 1.2s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,45,68,.6)}70%{box-shadow:0 0 0 16px rgba(255,45,68,0)}100%{box-shadow:0 0 0 0 rgba(255,45,68,0)}}
 .hint{font-family:var(--m);font-size:10.5px;color:var(--tx3);margin-top:10px;display:block;letter-spacing:.02em;line-height:1.5}
-
 table{width:100%;border-collapse:collapse;font-size:13px}
 td,th{padding:10px 6px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}
 th{font-family:var(--m);font-size:9.5px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;font-weight:600}
 .ovf{overflow-x:auto}
-
 .tag{
   display:inline-block;font-family:var(--m);font-size:10px;font-weight:600;
   padding:5px 10px;border-radius:999px;
@@ -292,70 +218,38 @@ th{font-family:var(--m);font-size:9.5px;color:var(--tx3);letter-spacing:.1em;tex
   color:var(--tx2);margin:0 5px 5px 0;letter-spacing:.04em;
 }
 .tag.r{color:var(--r);border-color:rgba(255,45,68,.35);background:rgba(255,45,68,.10)}
-
-.quote-card blockquote{
-  margin:0;font-size:16px;line-height:1.6;color:var(--tx);font-style:italic;
-  font-weight:500;letter-spacing:-.01em;
-}
+.quote-card blockquote{margin:0;font-size:16px;line-height:1.6;color:var(--tx);font-style:italic;font-weight:500;letter-spacing:-.01em}
 .quote-card blockquote::before{content:'“';color:var(--r);font-size:28px;line-height:0;vertical-align:-8px;margin-right:4px;font-style:normal}
-.quote-author{
-  margin-top:14px;font-family:var(--m);font-size:11px;letter-spacing:.1em;
-  color:var(--r);text-transform:uppercase;font-weight:600;
-}
-
+.quote-author{margin-top:14px;font-family:var(--m);font-size:11px;letter-spacing:.1em;color:var(--r);text-transform:uppercase;font-weight:600}
 nav.tabs{
-  position:fixed;
-  bottom:calc(14px + env(safe-area-inset-bottom));
-  left:50%;transform:translateX(-50%);
-  width:min(520px,calc(100% - 22px));
-  z-index:50;
-  display:flex;gap:2px;padding:6px;
+  position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  width:min(520px,calc(100% - 22px));z-index:50;display:flex;gap:2px;padding:6px;
   background:linear-gradient(180deg,rgba(28,28,32,.75),rgba(14,14,18,.85));
-  backdrop-filter:blur(36px) saturate(200%);
-  -webkit-backdrop-filter:blur(36px) saturate(200%);
-  border:1px solid rgba(255,255,255,.11);
-  border-radius:999px;
-  box-shadow:
-    0 24px 60px -20px rgba(0,0,0,.9),
-    inset 0 1px 0 rgba(255,255,255,.16),
-    inset 0 -1px 0 rgba(0,0,0,.3);
+  backdrop-filter:blur(36px) saturate(200%);-webkit-backdrop-filter:blur(36px) saturate(200%);
+  border:1px solid rgba(255,255,255,.11);border-radius:999px;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(0,0,0,.3);
 }
 .tab{
   flex:1;background:none;border:0;color:var(--tx3);
-  font-family:var(--f);font-size:8.5px;font-weight:600;
-  letter-spacing:.05em;padding:9px 2px 7px;
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  cursor:pointer;text-transform:uppercase;
-  border-radius:999px;transition:all .25s cubic-bezier(.2,.9,.3,1);
-  position:relative;
+  font-family:var(--f);font-size:8.5px;font-weight:600;letter-spacing:.05em;padding:9px 2px 7px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;text-transform:uppercase;
+  border-radius:999px;transition:all .25s cubic-bezier(.2,.9,.3,1);position:relative;
 }
 .tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .tab.on{
-  color:#fff;
-  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.22),
-    0 6px 16px -6px rgba(0,0,0,.6);
+  color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 16px -6px rgba(0,0,0,.6);
 }
 .tab.on svg{stroke:var(--r);filter:drop-shadow(0 0 6px var(--r-glow))}
 .tab:active{transform:scale(.94)}
-
 .a2hs{
-  position:fixed;
-  bottom:calc(88px + env(safe-area-inset-bottom));
-  left:50%;transform:translateX(-50%);
-  width:min(520px,calc(100% - 22px));
-  z-index:60;
-  padding:12px 14px;
+  position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  width:min(520px,calc(100% - 22px));z-index:60;padding:12px 14px;
   display:flex;align-items:center;gap:12px;
   background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
-  backdrop-filter:blur(36px) saturate(200%);
-  -webkit-backdrop-filter:blur(36px) saturate(200%);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:20px;
-  box-shadow:
-    0 24px 60px -20px rgba(0,0,0,.9),
-    inset 0 1px 0 rgba(255,255,255,.2);
+  backdrop-filter:blur(36px) saturate(200%);-webkit-backdrop-filter:blur(36px) saturate(200%);
+  border:1px solid rgba(255,255,255,.14);border-radius:20px;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.2);
   animation:msgIn .4s cubic-bezier(.2,.9,.3,1);
 }
 .a2hs.hidden{display:none}
@@ -370,33 +264,23 @@ nav.tabs{
 .a2hs-text span{font-size:11px;color:var(--tx3);display:block;margin-top:1px}
 .a2hs-btn{
   background:linear-gradient(155deg,#ff3d54,#c01428);border:0;color:#fff;
-  font-family:var(--f);font-size:12px;font-weight:600;
-  padding:9px 14px;border-radius:999px;cursor:pointer;
+  font-family:var(--f);font-size:12px;font-weight:600;padding:9px 14px;border-radius:999px;cursor:pointer;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -6px var(--r-glow);
 }
 .a2hs-btn:active{transform:scale(.96)}
-.a2hs-x{
-  background:none;border:0;color:var(--tx3);font-size:20px;line-height:1;
-  cursor:pointer;padding:0 2px;
-}
-
+.a2hs-x{background:none;border:0;color:var(--tx3);font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
 .modal{
-  position:fixed;inset:0;z-index:100;
-  background:rgba(0,0,0,.55);
+  position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.55);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  display:grid;place-items:center;padding:20px;
-  animation:fade .25s;
+  display:grid;place-items:center;padding:20px;animation:fade .25s;
 }
 .modal.hidden{display:none}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .modal-card{
   width:100%;max-width:400px;
   background:linear-gradient(155deg,rgba(40,40,46,.95),rgba(18,18,22,.98));
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:24px;padding:24px;
-  box-shadow:
-    0 40px 90px -20px rgba(0,0,0,.9),
-    inset 0 1px 0 rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:24px;
+  box-shadow:0 40px 90px -20px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.18);
   animation:msgIn .35s cubic-bezier(.2,.9,.3,1);
 }
 .modal-card h3{font-size:18px;font-weight:700;margin:0 0 14px;letter-spacing:-.02em}
@@ -547,8 +431,9 @@ nav.tabs{
     <div class="row" style="margin-top:12px">
       <button class="btn pri" style="flex:1" onclick="saveKey()">Save</button>
       <button class="btn" onclick="testKey()">Test key</button>
+      <button class="btn" onclick="listModels()">List models</button>
     </div>
-    <span class="hint" id="keyState"></span>
+    <span class="hint" id="keyState">Paste your key from aistudio.google.com. It starts with AIza.</span>
   </div>
   <div class="card">
     <div class="lbl">System</div>
@@ -665,9 +550,7 @@ const QUOTES=[
 let qIdx=Math.floor(Math.random()*QUOTES.length);
 function renderQuote(){
   const q=QUOTES[qIdx];
-  quoteBox.innerHTML=
-    `<blockquote>${q.q}</blockquote>`+
-    `<div class="quote-author">— ${q.a}</div>`;
+  quoteBox.innerHTML=`<blockquote>${q.q}</blockquote><div class="quote-author">— ${q.a}</div>`;
 }
 function nextQuote(){qIdx=(qIdx+1)%QUOTES.length;haptic(6);renderQuote();}
 
@@ -838,7 +721,7 @@ function sysPrompt(){
   const lastW=S.weights.length?S.weights[S.weights.length-1].w+" kg":"not logged";
   const weekLines=DOW.map((n,i)=>`${n}: ${DAYS[WEEK[i]].k}`).join("\n");
   return `You are JARVIS, personal gym intelligence for Abderhman: 17 years old, 105 kg, 179 cm, goal fat loss and muscle gain.
-RULES: Always address him as "Sir Abderhman". Calm, dry, loyal British-butler tone. Maximum 120 words, no markdown symbols.
+RULES: Always address him as "Sir Abderhman". Calm, dry, loyal British-butler tone. Keep answers tight — 60 to 100 words unless he asks for detail. No markdown symbols.
 ONLY topics: training, technique, cardio, fat loss, nutrition for training, recovery, motivation. Anything else: decline politely and steer back to training.
 EXCEPTION: If he asks who you are, who your owner is, who made you, or introduces himself, answer directly. You are JARVIS, his personal gym intelligence, and he — Abderhman — is your owner. Always confirm that. Then return to training.
 Never suggest steroids, fat burners, extreme diets, or eating below 2200 kcal; send medical or supplement questions to a doctor or parent.
@@ -868,7 +751,8 @@ let sampler=null;
 (async()=>{try{sampler=window.claude?await window.claude.use("sample"):null}catch(e){}setEngine()})();
 function setEngine(){
   const k=localStorage.getItem("gkey");
-  engine.textContent="Engine : "+(k?"Online Core → ":"")+(sampler?"":"")+"Offline Core";
+  const m=localStorage.getItem("gmodel");
+  engine.textContent="Engine : "+(k?"Online Core → "+(m||"auto"):"Offline Core");
 }
 function push(t,who){const d=document.createElement("div");d.className="msg "+(who==="u"?"u":"j");
   d.innerHTML=`<span class="who">${who==="u"?"SIR ABDERHMAN":"JARVIS"}</span>`+t.replace(/</g,"&lt;");
@@ -913,32 +797,169 @@ function offline(t){
    [/plateau|not losing|stuck|scale/i,"Plateau protocol: fourteen days with no movement, then cut 150 kcal or add 1500 steps — one change only. Judge weekly averages, never single mornings."],
    [/quote|motivation quote|rocky|arnold|goggins/i,()=>{const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];return `${q.q} — ${q.a}`}]
   ];
-  for(const[re,a] of KB){if(re.test(a))continue;if(re.test(t))return typeof a==="function"?a():a}
+  for(const[re,a] of KB){if(re.test(t))return typeof a==="function"?a():a}
   const d=DAYS[todayIdx()];
   return "My offline core covers training, cardio, nutrition, recovery and discipline, Sir Abderhman. Today is "+d.k+" and tomorrow is "+DAYS[tomorrowIdx()].k+". Ask about today's workout, tomorrow's workout, warmup, protein, calories, cardio, plateaus, soreness or swaps.";
 }
 function q(t){ask.value=t;send()}
 
-/* ============ GEMINI — YOUR WORKING MODEL LIST ============ */
-const GMODELS=["gemini-2.0-flash","gemini-1.5-flash","gemini-flash-latest","gemini-1.5-flash-latest"];
-async function gemini(t){
-  const key=localStorage.getItem("gkey");if(!key)return null;
-  let lastErr="";
-  for(const m of GMODELS){
-    try{
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`,{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({systemInstruction:{parts:[{text:sysPrompt()}]},contents:[{role:"user",parts:[{text:t}]}],
-          generationConfig:{temperature:.7,maxOutputTokens:400}})});
-      const j=await r.json().catch(()=>({}));
-      if(!r.ok){lastErr=(j.error&&j.error.message)||("HTTP "+r.status);continue}
-      const out=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).filter(Boolean).join("");
-      if(out)return out;
-      lastErr="empty response";
-    }catch(e){lastErr="network blocked ("+(e.message||e)+")"}
-  }
-  window.__gerr=lastErr;return null;
+/* ============ GEMINI — FAST, FULL-LENGTH ============ */
+const REQ_TIMEOUT_MS=25000;
+
+async function fetchJSON(url,opts){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),REQ_TIMEOUT_MS);
+  try{
+    const r=await fetch(url,{...opts,signal:ctrl.signal});
+    const j=await r.json().catch(()=>({}));
+    return {ok:r.ok,status:r.status,json:j};
+  }catch(e){
+    return {ok:false,status:0,json:{},err:e.message||"aborted"};
+  }finally{clearTimeout(timer)}
 }
+
+// Speed-first: flash-lite fastest, then flash, then pro. Newer versions win.
+function speedScore(n){
+  const m=String(n).match(/^gemini-(\d+)(?:\.(\d+))?/i);
+  if(!m)return -10000;
+  const major=parseInt(m[1])||0, minor=parseInt(m[2])||0;
+  let tier=0;
+  if(/flash-lite/i.test(n))tier=30;
+  else if(/flash/i.test(n))tier=20;
+  else if(/pro/i.test(n))tier=10;
+  else tier=5;
+  let penalty=0;
+  if(/exp|preview|thinking|deprecated|legacy/i.test(n))penalty-=40;
+  if(/embedding|image|vision|tts|audio|live|imagen|veo|aqa/i.test(n))penalty-=500;
+  return major*1000+minor*100+tier+penalty;
+}
+function sortBySpeed(names){return [...names].sort((a,b)=>speedScore(b)-speedScore(a))}
+
+async function fetchAvailableModels(key){
+  const {ok,json}=await fetchJSON(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}&pageSize=200`);
+  if(!ok)return null;
+  return (json.models||[])
+    .filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent"))
+    .map(m=>m.name.replace(/^models\//,""))
+    .filter(n=>/^gemini/i.test(n));
+}
+
+async function probeModel(key,name){
+  const {ok,json}=await fetchJSON(`https://generativelanguage.googleapis.com/v1beta/models/${name}:generateContent?key=${key}`,{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({contents:[{role:"user",parts:[{text:"."}]}],generationConfig:{temperature:0,maxOutputTokens:1}})
+  });
+  return !!(ok&&json&&json.candidates&&json.candidates.length);
+}
+
+async function pickFastestWorking(key,limit=4){
+  const raw=await fetchAvailableModels(key);
+  if(!raw||!raw.length)return null;
+  const sorted=sortBySpeed(raw);
+  const wave=sorted.slice(0,limit);
+  const results=await Promise.all(wave.map(async n=>({n,ok:await probeModel(key,n)})));
+  for(const cand of wave){
+    const hit=results.find(r=>r.n===cand&&r.ok);
+    if(hit){localStorage.setItem("gmodel",hit.n);return hit.n}
+  }
+  return null;
+}
+
+async function listModels(){
+  const key=(gkey.value.trim()||localStorage.getItem("gkey")||"");
+  if(!key){keyState.textContent="No key entered.";return}
+  localStorage.setItem("gkey",key);
+  keyState.textContent="Finding the fastest working model…";
+  const raw=await fetchAvailableModels(key);
+  if(!raw){keyState.textContent="✗ Could not read the model list. Check the key starts with AIza.";return}
+  if(!raw.length){keyState.textContent="✗ Key valid but no Gemini text models enabled for it.";return}
+  const working=await pickFastestWorking(key,6);
+  if(!working){keyState.textContent="✗ "+raw.length+" models listed, none responded. Top: "+sortBySpeed(raw).slice(0,5).join(", ");return}
+  setEngine();
+  const top=sortBySpeed(raw).slice(0,4).join(", ");
+  keyState.textContent="✓ Fastest working: "+working+"  ·  "+raw.length+" available. Top: "+top;
+  speak("Fast model selected, Sir Abderhman. Using "+working+".");
+}
+
+// Build the request body. First attempt disables thinking — that is the speed killer.
+function buildBody(userText,disableThinking){
+  const gen={temperature:0.7,maxOutputTokens:2048};
+  if(disableThinking){
+    // Gemini 2.5/3.x — 0 turns off internal reasoning so we get instant answers.
+    gen.thinkingConfig={thinkingBudget:0};
+  }
+  return {
+    systemInstruction:{parts:[{text:sysPrompt()}]},
+    contents:[{role:"user",parts:[{text:userText}]}],
+    generationConfig:gen
+  };
+}
+
+async function callModel(key,model,userText){
+  // Try with thinking disabled (fast). If the model rejects thinkingConfig, retry without it.
+  let {ok,json,err}=await fetchJSON(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(buildBody(userText,true))
+  });
+  if(!ok){
+    const msg=(json.error&&json.error.message)||"";
+    if(/thinkingConfig|thinking_config|unknown.*field|invalid.*argument/i.test(msg)){
+      // Retry without thinkingConfig
+      const r2=await fetchJSON(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(buildBody(userText,false))
+      });
+      ok=r2.ok;json=r2.json;err=r2.err;
+    }
+  }
+  if(!ok){
+    const msg=(json.error&&json.error.message)||err||("HTTP");
+    return {ok:false,err:msg};
+  }
+  const out=json?.candidates?.[0]?.content?.parts?.map(p=>p.text).filter(Boolean).join("");
+  if(!out)return {ok:false,err:"empty"};
+
+  // Detect truncation — Gemini returns finishReason "MAX_TOKENS" when it ran out.
+  const finish=json?.candidates?.[0]?.finishReason;
+  return {ok:true,text:out,truncated:finish==="MAX_TOKENS"};
+}
+
+async function gemini(t){
+  const key=localStorage.getItem("gkey");
+  if(!key)return null;
+
+  // Fast path: hit the saved model directly.
+  const saved=localStorage.getItem("gmodel");
+  if(saved){
+    let r=await callModel(key,saved,t);
+    // If the answer came back cut off, retry once with a higher ceiling.
+    if(r.ok&&r.truncated){
+      const r2=await callModel(key,saved,t);
+      if(r2.ok)return r2.text;
+    }
+    if(r.ok)return r.text;
+    localStorage.removeItem("gmodel");
+  }
+
+  // Discovery path.
+  const fast=await pickFastestWorking(key,4);
+  if(fast){
+    setEngine();
+    const r=await callModel(key,fast,t);
+    if(r.ok)return r.text;
+    window.__gerr=r.err;
+  }
+
+  // Hardcoded fallback chain of current models.
+  for(const m of ["gemini-3.5-flash-lite","gemini-3.5-flash","gemini-2.5-flash-lite","gemini-2.5-flash","gemini-2.0-flash"]){
+    if(m===saved||m===fast)continue;
+    const r=await callModel(key,m,t);
+    if(r.ok){localStorage.setItem("gmodel",m);setEngine();return r.text}
+    window.__gerr=r.err;
+  }
+  return null;
+}
+
 async function send(){
   const t=ask.value.trim();if(!t)return;ask.value="";haptic(6);push(t,"u");
   const box=push("…","j");
@@ -963,13 +984,33 @@ async function armAlarms(){
 }
 function fire(m){beep();haptic(50);speak(m);
   try{if("Notification"in window&&Notification.permission==="granted")new Notification("JARVIS",{body:m,icon:ICON_180})}catch(e){}}
-function saveKey(){const v=gkey.value.trim();if(!v)return;localStorage.setItem("gkey",v);setEngine();
-  keyState.textContent="Key saved. Run Test key to verify.";speak("Gemini core linked, Sir Abderhman.")}
-async function testKey(){const v=(gkey.value.trim()||localStorage.getItem("gkey")||"");
+
+function saveKey(){
+  const v=gkey.value.trim();if(!v)return;
+  localStorage.setItem("gkey",v);
+  localStorage.removeItem("gmodel");
+  setEngine();
+  keyState.textContent="Key saved. Finding fastest model…";
+  speak("Gemini core linked, Sir Abderhman.");
+  pickFastestWorking(v,6).then(m=>{
+    if(m){setEngine();keyState.textContent="✓ Ready. Fastest model: "+m+"."}
+    else keyState.textContent="Key saved but no live model found. Tap List models.";
+  });
+}
+async function testKey(){
+  const v=(gkey.value.trim()||localStorage.getItem("gkey")||"");
   if(!v){keyState.textContent="No key entered.";return}
-  localStorage.setItem("gkey",v);keyState.textContent="Testing…";
+  localStorage.setItem("gkey",v);
+  localStorage.removeItem("gmodel");
+  keyState.textContent="Testing…";
+  const raw=await fetchAvailableModels(v);
+  if(!raw||!raw.length){keyState.textContent="✗ Could not list models. Check the key starts with AIza.";return}
+  const working=await pickFastestWorking(v,6);
+  if(!working){keyState.textContent="✗ No model responded. Top: "+sortBySpeed(raw).slice(0,5).join(", ");return}
+  setEngine();
   const r=await gemini("Say online in three words.");
-  keyState.textContent=r?"✓ Gemini responding. Assistant now runs on your key.":"✗ Failed — "+(window.__gerr||"unknown")+". If it says network blocked, host this file on Netlify or GitHub Pages.";}
+  keyState.textContent=r?"✓ Working. Fastest: "+working+".":"✗ Probe passed but message failed. Try List models.";
+}
 if(localStorage.getItem("gkey"))gkey.value=localStorage.getItem("gkey");
 const H=new Date().getHours();
 greet.textContent=(H<12?"good morning":H<18?"good afternoon":"good evening")+" · sir abderhman";
