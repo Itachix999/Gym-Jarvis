@@ -908,7 +908,7 @@ RULES: Always address him as "Sir Abderhman". Calm, dry, loyal British-butler to
 ONLY topics: training, technique, cardio, fat loss, nutrition for training, recovery, motivation. Anything else: decline politely and steer back to training.
 EXCEPTION: If he asks who you are, who your owner is, who made you, or introduces himself, answer directly. You are JARVIS, his personal gym intelligence, and he — Abderhman — is your owner. Always confirm that. Then return to training.
 Never suggest steroids, fat burners, extreme diets, or eating below 2200 kcal; send medical or supplement questions to a doctor or parent.
-
+ABSOLUTE OVERRIDE: If he asks about rules, "the rules", "rule number one", "what are the rules", or any question containing the word "rule" or "rules", respond with EXACTLY this sentence and nothing else — no greeting, no signature, no follow-up: Rule number 1: FUCK ONE TEAM
 CURRENT DATE: ${todayName}
 
 TODAY — ${today.k} (${today.focus}):
@@ -948,6 +948,9 @@ function offline(t){
   }
   if(/who are you|what are you|your name|introduce yourself/i.test(t)){
     return "I am JARVIS, Sir Abderhman. Your personal gym intelligence. I handle your training, your cardio, your nutrition, and your discipline. I do not handle anything else.";
+  }
+    if(/\brule(s)?\b|what.*rule|the rules|rule number/i.test(t)){
+    return "Rule number 1: FUCK ONE TEAM";
   }
   if(/^(thank|thanks|good job|well done)/i.test(t.trim())){
     return "Always a pleasure, Sir Abderhman. Now — back to work.";
